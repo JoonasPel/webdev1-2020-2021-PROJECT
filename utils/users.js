@@ -55,8 +55,7 @@ const generateId = () => {
  * @returns {boolean}
  */
 const emailInUse = email => {
-  // TODO: 8.3 Check if there already exists a user with a given email
-  throw new Error('Not Implemented');
+  return data.users.some(user => user.email === email);
 };
 
 /**
@@ -70,8 +69,12 @@ const emailInUse = email => {
  * @returns {Object|undefined}
  */
 const getUser = (email, password) => {
-  // TODO: 8.3 Get user whose email and password match the provided values
-  throw new Error('Not Implemented');
+  let user = data.users.find(user => user.email === email &&
+    user.password === password);
+
+  if (typeof user === "undefined") { return undefined };
+  //user found, JSON needed to make a deep copy.
+  return JSON.parse(JSON.stringify(user));
 };
 
 /**
@@ -84,8 +87,11 @@ const getUser = (email, password) => {
  * @returns {Object|undefined}
  */
 const getUserById = userId => {
-  // TODO: 8.3 Find user by user id
-  throw new Error('Not Implemented');
+  let user = data.users.find(user => user._id === userId);
+
+  if (typeof user === "undefined") { return undefined };
+  //user found, JSON needed to make a deep copy.
+  return JSON.parse(JSON.stringify(user));
 };
 
 /**
@@ -95,8 +101,16 @@ const getUserById = userId => {
  * @returns {Object|undefined} deleted user or undefined if user does not exist
  */
 const deleteUserById = userId => {
-  // TODO: 8.3 Delete user with a given id
-  throw new Error('Not Implemented');
+
+  for (let i = 0; i < data.users.length; ++i) {
+    if (data.users[i]._id === userId) {
+      let user = data.users[i];
+      data.users.splice(i, 1); //deletes user
+      return user;
+    }
+  }
+  //userID was not found
+  return undefined;
 };
 
 /**
@@ -108,8 +122,8 @@ const deleteUserById = userId => {
  * @returns {Array<Object>} all users
  */
 const getAllUsers = () => {
-  // TODO: 8.3 Retrieve all users
-  throw new Error('Not Implemented');
+  //JSON needed to make a deep copy.
+  return JSON.parse(JSON.stringify(data.users));
 };
 
 /**
@@ -125,9 +139,14 @@ const getAllUsers = () => {
  * @returns {Object} copy of the created user
  */
 const saveNewUser = user => {
-  // TODO: 8.3 Save new user
-  // Use generateId() to assign a unique id to the newly created user.
-  throw new Error('Not Implemented');
+  let new_id = generateId();
+  user._id = new_id;
+  if(!user.hasOwnProperty('role')) {
+    user.role = 'customer';
+  }
+  //JSON needed to make a deep copy.
+  data.users.push(JSON.parse(JSON.stringify(user))); //save new user (as copy)
+  return JSON.parse(JSON.stringify(user)); //return user as a different copy
 };
 
 /**
@@ -144,8 +163,15 @@ const saveNewUser = user => {
  * @throws {Error} error object with message "Unknown role"
  */
 const updateUserRole = (userId, role) => {
-  // TODO: 8.3 Update user's role
-  throw new Error('Not Implemented');
+  if(!(role === 'customer' || role === 'admin')) {
+    throw new Error('Unknown role');
+  }
+  let user_index = data.users.findIndex(user => user._id === userId);
+  if (user_index === -1) { return undefined }; //UserId not found
+
+  data.users[user_index].role = role; //change role
+  //JSON needed to make a deep copy.
+  return JSON.parse(JSON.stringify(data.users[user_index]));
 };
 
 /**
@@ -158,8 +184,24 @@ const updateUserRole = (userId, role) => {
  * @returns {Array<string>} Array of error messages or empty array if user is valid
  */
 const validateUser = user => {
-  // TODO: 8.3 Validate user before saving
-  throw new Error('Not Implemented');
+
+  var error_arr = [];
+
+  if (!user.hasOwnProperty('name')) {
+    error_arr.push("Missing name");
+  }
+  if (!user.hasOwnProperty('email')) {
+    error_arr.push("Missing email");
+  }
+  if (!user.hasOwnProperty('password')) {
+    error_arr.push("Missing password");
+  }
+  if (user.hasOwnProperty('role')) {
+    if (!(user.role === 'customer' || user.role === 'admin'))
+      error_arr.push("Unknown role");
+  }
+  return error_arr;
+
 };
 
 module.exports = {
