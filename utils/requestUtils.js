@@ -21,11 +21,16 @@ const getCredentials = request => {
  * @returns {boolean}
  */
 const acceptsJson = request => {
-  // TODO: 8.3 Check if the client accepts JSON as a response based on "Accept" request header
-  // NOTE: "Accept" header format allows several comma separated values simultaneously
-  // as in "text/html,application/xhtml+xml,application/json,application/xml;q=0.9,*/*;q=0.8"
-  // Do not rely on the header value containing only single content type!
-  throw new Error('Not Implemented');
+  let header_accepted = request.headers['accept'];
+  //check if header missing
+  if (header_accepted === undefined) { 
+    return false; 
+  };
+  if (request.accepts('json')) { 
+    return true; 
+  } else { 
+    return false; 
+  };
 };
 
 /**
