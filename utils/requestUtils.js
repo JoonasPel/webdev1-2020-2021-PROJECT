@@ -6,12 +6,12 @@
  * @returns {Array|null} [username, password] or null if header is missing
  */
 const getCredentials = request => {
-  // TODO: 8.4 Parse user credentials from the "Authorization" request header
-  // NOTE: The header is base64 encoded as required by the http standard.
-  //       You need to first decode the header back to its original form ("email:password").
-  //  See: https://attacomsian.com/blog/nodejs-base64-encode-decode
-  //       https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
-  throw new Error('Not Implemented');
+    // TODO: 8.4 Parse user credentials from the "Authorization" request header
+    // NOTE: The header is base64 encoded as required by the http standard.
+    //       You need to first decode the header back to its original form ("email:password").
+    //  See: https://attacomsian.com/blog/nodejs-base64-encode-decode
+    //       https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
+    throw new Error('Not Implemented');
 };
 
 /**
@@ -21,16 +21,18 @@ const getCredentials = request => {
  * @returns {boolean}
  */
 const acceptsJson = request => {
-  let header_accepted = request.headers['accept'];
-  //check if header missing
-  if (header_accepted === undefined) { 
-    return false; 
-  };
-  if (request.accepts('json')) { 
-    return true; 
-  } else { 
-    return false; 
-  };
+
+    let header_accepted = request.headers['accept'];
+    //check if header missing
+    if (header_accepted === undefined) {
+        return false;
+    };
+    // check if header includes required types
+    if (header_accepted.includes('application/json') || header_accepted.includes('*/*')) {
+        return true;
+    } else {
+        return false;
+    };
 };
 
 /**
@@ -40,11 +42,11 @@ const acceptsJson = request => {
  * @returns {boolean}
  */
 const isJson = request => {
-  if(request.headers['content-type'] === 'application/json') {
-    return true;
-  } else {
-    return false;
-  };
+    if (request.headers['content-type'] === 'application/json') {
+        return true;
+    } else {
+        return false;
+    };
 };
 
 /**
@@ -65,19 +67,19 @@ const isJson = request => {
  * @returns {Promise<*>} Promise resolves to JSON content of the body
  */
 const parseBodyJson = request => {
-  return new Promise((resolve, reject) => {
-    let body = '';
+    return new Promise((resolve, reject) => {
+        let body = '';
 
-    request.on('error', err => reject(err));
+        request.on('error', err => reject(err));
 
-    request.on('data', chunk => {
-      body += chunk.toString();
+        request.on('data', chunk => {
+            body += chunk.toString();
+        });
+
+        request.on('end', () => {
+            resolve(JSON.parse(body));
+        });
     });
-
-    request.on('end', () => {
-      resolve(JSON.parse(body));
-    });
-  });
 };
 
 module.exports = { acceptsJson, getCredentials, isJson, parseBodyJson };
