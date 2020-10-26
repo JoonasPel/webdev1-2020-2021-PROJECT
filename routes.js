@@ -105,7 +105,6 @@ const handleRequest = async(request, response) => {
         }
         // TODO: 8.3 Implement registration
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-
         const parsedBody = await parseBodyJson(request);
         const validatedUserMessage = validateUser(parsedBody);
         if (!validatedUserMessage.length == 0) {
@@ -113,9 +112,9 @@ const handleRequest = async(request, response) => {
         } else if (emailInUse(parsedBody.email)) {
             return responseUtils.badRequest(response, 'Bad Request');
         } else {
-            const newUser = saveNewUser(parsedBody)
+            const newUser = saveNewUser(parsedBody);
             newUser['role'] = 'customer';
-            return responseUtils.createdResource(response, newUser)
+            return responseUtils.createdResource(response, newUser);
 
         }
     };
