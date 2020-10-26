@@ -49,10 +49,8 @@ const postOrPutJSON = async (url, method, data = {}) => {
     },
     body: JSON.stringify(data)
   });
-  const response_message = await response.json();
+  return response.json();
   
-  return response_message;
-
 };
 
 /**
