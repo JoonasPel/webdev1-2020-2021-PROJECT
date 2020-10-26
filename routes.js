@@ -1,7 +1,7 @@
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
-const { emailInUse, getAllUsers, saveNewUser, validateUser } = require('./utils/users');
+const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole } = require('./utils/users');
 
 /**
  * Known API routes and their allowed methods
@@ -91,11 +91,10 @@ const handleRequest = async(request, response) => {
 
     // GET all users
     if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
-        let users = getAllUsers();
-        //console.log(users.type)
         // TODO: 8.3 Return all users as JSON
-        // TODO: 8.4 Add authentication (only allowed to users with role "admin")
+        let users = getAllUsers();
         return responseUtils.sendJson(response, users);
+        // TODO: 8.4 Add authentication (only allowed to users with role "admin")
     }
 
     // register new user
@@ -104,11 +103,29 @@ const handleRequest = async(request, response) => {
         if (!isJson(request)) {
             return responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
         }
-
         // TODO: 8.3 Implement registration
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-        throw new Error('Not Implemented');
-    }
-};
+
+        const parsedBody = await parseBodyJson(request);
+        //console.log(parsedBody)
+        //console.log(emailInUse(parsedBody.email))
+        if (!('email' in parsedBody)) {
+            return responseUtils.badRequest(response);
+
+        } else if (emailInUse(parsedBody.email)) {
+            return responseUtils.badRequest(response);
+        } else if (!('name' in parsedBody)) {
+            return responseUtils.badRequest(response);
+
+        } else if (!('password' in parsedBody)) {
+            return responseUtils.badRequest(response);
+
+        } else {
+            const updatedUser = updateUserRole(json._id, 'customer')
+            return responseUtils.createdResource(response, updatedUser)
+
+        }
+    };
+}
 
 module.exports = { handleRequest };
