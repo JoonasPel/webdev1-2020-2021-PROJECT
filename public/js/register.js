@@ -14,17 +14,24 @@ const password = document.querySelector('#password');
 const passwordConfirmation = document.querySelector('#passwordConfirmation');
 
 
-form.addEventListener('submit', function(event) {
+form.addEventListener('submit', async function(event) {
     //cancel the default action
     event.preventDefault();
 
 
     //Prevent registration if passwords don't match
     if (password.value != passwordConfirmation.value) {
-        //createNotification("Passwords do not match!", "what container?", false);      
+        createNotification("Passwords do not match!", "notifications-container", false);      
     } else {
-        //postOrPutJSON('/api/register', 'POST', data?);
-        //createNotification("Successful", "what container?");
-        form.reset();   
+        //how to convert name, email, password to data?
+        let response = await postOrPutJSON('/api/register', 'POST', "data");
+        if(response.status === 201) {
+            //registration successful
+            createNotification("Successful", "notifications-container");
+            form.reset();  
+        } else {
+            //registration NOT successful
+            createNotification(response.error, "notifications-container", false);
+        }      
     }
 });
