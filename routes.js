@@ -107,22 +107,20 @@ const handleRequest = async(request, response) => {
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 
         const parsedBody = await parseBodyJson(request);
-        //console.log(parsedBody)
-        //console.log(emailInUse(parsedBody.email))
         if (!('email' in parsedBody)) {
-            return responseUtils.badRequest(response);
-
+            return responseUtils.badRequest(response, 'Bad Request');
         } else if (emailInUse(parsedBody.email)) {
-            return responseUtils.badRequest(response);
+
+            return responseUtils.badRequest(response, 'Bad Request');
         } else if (!('name' in parsedBody)) {
-            return responseUtils.badRequest(response);
+            return responseUtils.badRequest(response, 'Bad Request');
 
         } else if (!('password' in parsedBody)) {
-            return responseUtils.badRequest(response);
-
+            return responseUtils.badRequest(response, 'Bad Request');
         } else {
-            const updatedUser = updateUserRole(json._id, 'customer')
-            return responseUtils.createdResource(response, updatedUser)
+            const newUser = saveNewUser(parsedBody)
+            newUser['role'] = 'customer';
+            return responseUtils.createdResource(response, newUser)
 
         }
     };
