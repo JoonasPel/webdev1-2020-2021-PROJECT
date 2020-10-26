@@ -32,7 +32,7 @@ describe('User Inteface', () => {
     return {
       name: 'Name',
       email: `${generateRandomString()}@email.com`,
-      password: generateRandomString()
+      password: generateRandomString(10)
     };
   };
 

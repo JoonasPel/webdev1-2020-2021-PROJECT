@@ -33,7 +33,7 @@ describe('User Inteface', () => {
     return {
       name: 'Name',
       email: `${generateRandomString()}@email.com`,
-      password: generateRandomString()
+      password: generateRandomString(10)
     };
   };
 
@@ -143,12 +143,12 @@ describe('User Inteface', () => {
       } catch (error) {}
 
       const updateButton = await page.$(updateButtonSelector);
-      let errorMessage =
-        `Tried to modify user: ${customerUser.name}` +
-        `Could not either locate the element ${openButtonSelector}` +
+      let errorMsg =
+        `Tried to modify user: ${customerUser.name} ` +
+        `Could not either locate the element ${openButtonSelector} ` +
         `or update button ${updateButtonSelector}`;
 
-      expect(updateButton, errorMessage).not.to.be.null;
+      expect(updateButton, errorMsg).not.to.be.null;
 
       const { _id, name, email, role } = customerUser;
       const idText = await page.$eval('#id-input', elem => elem.value.trim());
@@ -156,7 +156,7 @@ describe('User Inteface', () => {
       const emailText = await page.$eval('#email-input', elem => elem.value.trim());
       const roleText = await page.$eval('#role-input', elem => elem.value.trim());
 
-      errorMessage =
+      errorMsg =
         'Tried to get text content from modify user ' +
         'but could not find one or more of the elements. ' +
         'Make sure that all the necessary ids are present ' +
@@ -164,7 +164,7 @@ describe('User Inteface', () => {
 
       expect({ _id: idText, name: nameText, email: emailText, role: roleText }).to.include(
         { _id, name, email, role },
-        errorMessage
+        errorMsg
       );
     });
 
@@ -223,6 +223,16 @@ describe('User Inteface', () => {
 
       await page.goto(usersPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
+
+      const deleteButton = await page.$(deleteSelector);
+
+      let errorMsg =
+        `Tried to delete user: ${name} ` +
+        `Could not locate the delete button ${deleteSelector} ` +
+        'Make sure the delete button has correct id.';
+
+      expect(deleteButton, errorMsg).not.to.be.null;
+
       await page.click(deleteSelector);
       await page.waitForTimeout(shortWaitTime);
 
@@ -230,7 +240,7 @@ describe('User Inteface', () => {
         elem.textContent.trim()
       );
 
-      let errorMsg =
+      errorMsg =
         'Navigated to "/users.html" ' +
         `and clicked delete for user "${name}". ` +
         `Expected to receive a notification: "${expectedNotification}" ` +
