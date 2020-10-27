@@ -55,8 +55,7 @@ const postOrPutJSON = async(url, method, data = {}) => {
         body: JSON.stringify(data)
     });
     return response.json();
-
-};
+}
 
 /**
  * Asynchronously remove a resource from the server (DELETE)

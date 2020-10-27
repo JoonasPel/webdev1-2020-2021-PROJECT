@@ -23,15 +23,16 @@ form.addEventListener('submit', async function(event) {
     if (password.value != passwordConfirmation.value) {
         createNotification("Passwords do not match!", "notifications-container", false);      
     } else {
-        //how to convert name, email, password to data?
-        let response = await postOrPutJSON('/api/register', 'POST', "data");
-        if(response.status === 201) {
+        let user_data = {"name": name.value, "email": email.value, "password": password.value};
+        let response = await postOrPutJSON('/api/register', 'POST', user_data);
+        console.log(response);
+        if(response.status == 201) {
             //registration successful
             createNotification("Successful", "notifications-container");
             form.reset();  
         } else {
             //registration NOT successful
-            createNotification(response.error, "notifications-container", false);
+            createNotification("Not Successful", "notifications-container", false);
         }      
     }
 });
