@@ -21,7 +21,7 @@
 const getJSON = async url => {
     try {
         let res = await fetch(url)
-        return await res.json();
+        return res.json();
     } catch (error) {
         console.log(error)
     }
@@ -54,7 +54,7 @@ const postOrPutJSON = async(url, method, data = {}) => {
         },
         body: JSON.stringify(data)
     });
-    return response.json();
+    return response;
 }
 
 /**

@@ -23,33 +23,35 @@ allUsers.then(data => {
     //console.log(data.length)
     let usersCount = data.length;
     let counter = 0;
+    let temp_data;
     while (counter < usersCount) {
-        console.log(data[counter])
+        temp_data = data[counter];
+        //console.log(temp_data)
             //clone template
         var clone = template.content.cloneNode(true);
-        console.log(clone)
+        //console.log(clone)
             //div
-        clone.querySelector(".item-row").id = "user-" + data[counter]._id
+        clone.querySelector(".item-row").id = "user-" + temp_data._id
 
         //name
-        clone.querySelector("h3").textContent = data[counter].name;
-        clone.querySelector("h3").id = "name-" + data[counter]._id
+        clone.querySelector("h3").textContent = temp_data.name;
+        clone.querySelector("h3").id = "name-" + temp_data._id
 
         //email
-        clone.querySelectorAll("p")[0].textContent = data[counter].email;
-        clone.querySelectorAll("p")[0].id = "email-" + data[counter]._id
+        clone.querySelectorAll("p")[0].textContent = temp_data.email;
+        clone.querySelectorAll("p")[0].id = "email-" + temp_data._id
             //role
-        clone.querySelectorAll("p")[1].textContent = data[counter].role;
-        clone.querySelectorAll("p")[1].id = "role-" + data[counter]._id
+        clone.querySelectorAll("p")[1].textContent = temp_data.role;
+        clone.querySelectorAll("p")[1].id = "role-" + temp_data._id
             //buttons
-        clone.querySelectorAll("button")[0].id = "modify-" + data[counter]._id
-        clone.querySelectorAll("button")[1].id = "remove-" + data[counter]._id
+        clone.querySelectorAll("button")[0].id = "modify-" + temp_data._id
+        clone.querySelectorAll("button")[1].id = "remove-" + temp_data._id
 
         //append to contacts
         document.getElementById("users-container").appendChild(clone);
-        counter = counter + 1;
+        counter++;
     }
-})
+});
 
 
 /**
