@@ -14,6 +14,45 @@
  *
  *       - Each cloned template fragment should be appended to <div id="users-container">
  *       - Use getJSON() function from utils.js to fetch user data from server
+ **/
+const template = document.getElementById('user-template');
+
+let allUsers = getJSON("/api/users")
+allUsers.then(data => {
+    //console.log(data)
+    //console.log(data.length)
+    let usersCount = data.length;
+    let counter = 0;
+    while (counter < usersCount) {
+        console.log(data[counter])
+            //clone template
+        var clone = template.content.cloneNode(true);
+        console.log(clone)
+            //div
+        clone.querySelector(".item-row").id = "user-" + data[counter]._id
+
+        //name
+        clone.querySelector("h3").textContent = data[counter].name;
+        clone.querySelector("h3").id = "name-" + data[counter]._id
+
+        //email
+        clone.querySelectorAll("p")[0].textContent = data[counter].email;
+        clone.querySelectorAll("p")[0].id = "email-" + data[counter]._id
+            //role
+        clone.querySelectorAll("p")[1].textContent = data[counter].role;
+        clone.querySelectorAll("p")[1].id = "role-" + data[counter]._id
+            //buttons
+        clone.querySelectorAll("button")[0].id = "modify-" + data[counter]._id
+        clone.querySelectorAll("button")[1].id = "remove-" + data[counter]._id
+
+        //append to contacts
+        document.getElementById("users-container").appendChild(clone);
+        counter = counter + 1;
+    }
+})
+
+
+/**
  *
  * TODO: 8.5 Updating/modifying and deleting existing users
  *       - Use postOrPutJSON() function from utils.js to send your data back to server

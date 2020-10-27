@@ -19,8 +19,13 @@
  * @returns {Promise<*>} promise that resolves to the parsed JSON
  */
 const getJSON = async url => {
-  // TODO: 8.3 Implement this
-  throw new Error('Not Implemented');
+    try {
+        let res = await fetch(url)
+        return await res.json();
+    } catch (error) {
+        console.log(error)
+    }
+
 };
 
 /**
@@ -34,23 +39,23 @@ const getJSON = async url => {
  * @param {Object|Array} data payload data be sent to the server as JSON
  * @returns {Promise<*>} promise that resolves to the parsed JSON
  */
-const postOrPutJSON = async (url, method, data = {}) => {
-  method = method.toUpperCase();
-  if (method !== 'POST' && method !== 'PUT') {
-    throw 'Invalid method! Valid methods are POST and PUT!';
-  }
+const postOrPutJSON = async(url, method, data = {}) => {
+    method = method.toUpperCase();
+    if (method !== 'POST' && method !== 'PUT') {
+        throw 'Invalid method! Valid methods are POST and PUT!';
+    }
 
-  // TODO: 8.3 Implement this
-  const response = await fetch(url, {
-    method: method,
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
-  return response.json();
-  
+    // TODO: 8.3 Implement this
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    return response.json();
+
 };
 
 /**
@@ -63,8 +68,8 @@ const postOrPutJSON = async (url, method, data = {}) => {
  * @returns {Promise<*>} promise that resolves to the parsed JSON
  */
 const deleteResourse = async url => {
-  // TODO: 8.5 Implement this
-  throw new Error('Not Implemented');
+    // TODO: 8.5 Implement this
+    throw new Error('Not Implemented');
 };
 
 /**
@@ -75,9 +80,9 @@ const deleteResourse = async url => {
  * @returns {string}
  */
 const generateId = () => {
-  // Shamelessly borrowed from a Gist. See:
-  // https://gist.github.com/gordonbrander/2230317
-  return ('_' + Math.random().toString(36).substr(2, 9));
+    // Shamelessly borrowed from a Gist. See:
+    // https://gist.github.com/gordonbrander/2230317
+    return ('_' + Math.random().toString(36).substr(2, 9));
 };
 
 /**
@@ -91,26 +96,26 @@ const generateId = () => {
  * @param {boolean} isSuccess whether the message describes a success or a failure
  */
 const createNotification = (message, containerId, isSuccess = true) => {
-  const container = document.getElementById(containerId);
+    const container = document.getElementById(containerId);
 
-  // Create new p element to hold text
-  const newParagraph = document.createElement('p');
+    // Create new p element to hold text
+    const newParagraph = document.createElement('p');
 
-  // Create unique id for the notification so that it can easily be removed after timeout
-  const notificationId = generateId()
-  newParagraph.id = notificationId;
+    // Create unique id for the notification so that it can easily be removed after timeout
+    const notificationId = generateId()
+    newParagraph.id = notificationId;
 
-  // Set CSS class for the paragraph based on the isSuccess variable
-  newParagraph.classList.add(isSuccess ? 'background-lightgreen' : 'background-red');
+    // Set CSS class for the paragraph based on the isSuccess variable
+    newParagraph.classList.add(isSuccess ? 'background-lightgreen' : 'background-red');
 
-  // Add message test inside the paragraph and append the paragraph to the container
-  newParagraph.append(document.createTextNode(message));
-  container.append(newParagraph);
+    // Add message test inside the paragraph and append the paragraph to the container
+    newParagraph.append(document.createTextNode(message));
+    container.append(newParagraph);
 
-  // After five seconds remove the notification
-  setTimeout(() => {
-    removeElement(containerId, notificationId);
-  }, 5000);
+    // After five seconds remove the notification
+    setTimeout(() => {
+        removeElement(containerId, notificationId);
+    }, 5000);
 };
 
 /**
@@ -120,6 +125,6 @@ const createNotification = (message, containerId, isSuccess = true) => {
  * @param {string} elementId id of the element to be removed
  */
 const removeElement = (containerId, elementId) => {
-  const container = document.getElementById(containerId);
-  container.querySelectorAll(`#${elementId}`).forEach(element => element.remove());
+    const container = document.getElementById(containerId);
+    container.querySelectorAll(`#${elementId}`).forEach(element => element.remove());
 };
