@@ -1,5 +1,5 @@
-const { getCredentials } = require('./utils/requestUtils');
-const { getUser } = require('./utils/users.js');
+const { getCredentials } = require('../utils/requestUtils');
+const { getUser } = require('../utils/users');
 
 /**
  * Get current user based on the request headers
