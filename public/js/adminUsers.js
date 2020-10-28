@@ -26,26 +26,26 @@ allUsers.then(data => {
     let temp_data;
     while (counter < usersCount) {
         temp_data = data[counter];
-        //console.log(temp_data)
-            //clone template
+
+        //clone template
         var clone = template.content.cloneNode(true);
-        //console.log(clone)
-            //div
-        clone.querySelector(".item-row").id = "user-" + temp_data._id
+
+        //div
+        clone.querySelector(".item-row").id = "user-" + temp_data._id;
 
         //name
         clone.querySelector("h3").textContent = temp_data.name;
-        clone.querySelector("h3").id = "name-" + temp_data._id
+        clone.querySelector("h3").id = "name-" + temp_data._id;
 
         //email
         clone.querySelectorAll("p")[0].textContent = temp_data.email;
-        clone.querySelectorAll("p")[0].id = "email-" + temp_data._id
-            //role
+        clone.querySelectorAll("p")[0].id = "email-" + temp_data._id;
+        //role
         clone.querySelectorAll("p")[1].textContent = temp_data.role;
-        clone.querySelectorAll("p")[1].id = "role-" + temp_data._id
-            //buttons
-        clone.querySelectorAll("button")[0].id = "modify-" + temp_data._id
-        clone.querySelectorAll("button")[1].id = "remove-" + temp_data._id
+        clone.querySelectorAll("p")[1].id = "role-" + temp_data._id;
+        //buttons
+        clone.querySelectorAll("button")[0].id = "modify-" + temp_data._id;
+        clone.querySelectorAll("button")[1].id = "remove-" + temp_data._id;
 
         //append to contacts
         document.getElementById("users-container").appendChild(clone);
