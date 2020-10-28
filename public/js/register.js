@@ -25,7 +25,7 @@ form.addEventListener('submit', async function(event) {
     } else {
         let user_data = {"name": name.value, "email": email.value, "password": password.value};
         let response = await postOrPutJSON('/api/register', 'POST', user_data);
-        console.log(response);
+
         if(response.status == 201) {
             //registration successful
             createNotification("Successful", "notifications-container");
