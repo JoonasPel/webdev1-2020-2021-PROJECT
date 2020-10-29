@@ -69,7 +69,7 @@ const listUserHTML = (user) => {
  *       - Use createNotification() function from utils.js to create notifications
  */
 //listen for button clicks
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     //get clicked element id and split it into array
     let buttonId = e.target.id;
     let actionUser = buttonId.split('-')
@@ -82,13 +82,13 @@ document.addEventListener('click', function(e) {
     }
     //use array to decide function
     else if (actionUser[0] === 'remove') {
-        let resp = deleteResourse('/api/users/' + actionUser[1]);
-        console.log(resp)
+        deleteUser(actionUser);
+
 
 
     } else if (actionUser[0] === 'modify') {
-        console.log('modify')
-            //get user info from api by userid
+        //console.log('modify')
+        //get user info from api by userid
         getJSON("/api/users/" + actionUser[1]).then(data => {
             modifyUser(data);
         })
@@ -99,7 +99,7 @@ document.addEventListener('click', function(e) {
 function modifyUser(user) {
     const formtemplate = document.getElementById('form-template');
     document.getElementById("modify-user").innerHTML = '';
-    console.log(user)
+    //console.log(user)
     let cloneForm = formtemplate.content.cloneNode(true);
     //form id
     cloneForm.getElementById("edit-user-form").id = "edit-user-" + user._id;
@@ -118,5 +118,21 @@ function modifyUser(user) {
 
     //append to contacts
     document.getElementById("modify-user").appendChild(cloneForm);
+
+}
+
+async function deleteUser(actionUser) {
+
+    try {
+        //try to delete user from server database, throws if unsuccessfull
+        const resp = await deleteResourse('/api/users/' + actionUser[1]);
+        //remove div from html
+        document.getElementById('user-' + actionUser[1]).remove();
+        //show notification to user
+        createNotification('Deleted user ' + resp.email, 'notifications-container');
+    } catch (error) {
+        //deleteResourse() did throw, deleting user was unsuccessful
+        createNotification(error, 'notifications-container', false);
+    }
 
 }

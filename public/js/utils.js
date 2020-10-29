@@ -77,7 +77,12 @@ const deleteResourse = async url => {
             'Accept': 'application/json'
         }
     });
-    return response.json() 
+    if(response.status === 200) {
+        return response.json();
+    } else {
+        throw new Error(response.status);
+    }
+
 };
 
 /**
