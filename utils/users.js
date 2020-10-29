@@ -69,10 +69,10 @@ const emailInUse = email => {
  * @returns {Object|undefined}
  */
 const getUser = (email, password) => {
-  let user = data.users.find(user => user.email === email &&
+  const user = data.users.find(user => user.email === email &&
     user.password === password);
 
-  if (typeof user === "undefined") { return undefined };
+  if (typeof user === "undefined") { return undefined; }
   //user found, JSON needed to make a deep copy.
   return JSON.parse(JSON.stringify(user));
 };
@@ -87,9 +87,9 @@ const getUser = (email, password) => {
  * @returns {Object|undefined}
  */
 const getUserById = userId => {
-  let user = data.users.find(user => user._id === userId);
+  const user = data.users.find(user => user._id === userId);
 
-  if (typeof user === "undefined") { return undefined };
+  if (typeof user === "undefined") { return undefined; }
   //user found, JSON needed to make a deep copy.
   return JSON.parse(JSON.stringify(user));
 };
@@ -104,7 +104,7 @@ const deleteUserById = userId => {
 
   for (let i = 0; i < data.users.length; ++i) {
     if (data.users[i]._id === userId) {
-      let user = data.users[i];
+      const user = data.users[i];
       data.users.splice(i, 1); //deletes user
       return user;
     }
@@ -139,9 +139,9 @@ const getAllUsers = () => {
  * @returns {Object} copy of the created user
  */
 const saveNewUser = user => {
-  let new_id = generateId();
-  user._id = new_id;
-  if(!user.hasOwnProperty('role')) {
+  const newID = generateId();
+  user._id = newID;
+  if(!Object.prototype.hasOwnProperty.call(user, 'role')) {
     user.role = 'customer';
   }
   //JSON needed to make a deep copy.
@@ -166,12 +166,12 @@ const updateUserRole = (userId, role) => {
   if(!(role === 'customer' || role === 'admin')) {
     throw new Error('Unknown role');
   }
-  let user_index = data.users.findIndex(user => user._id === userId);
-  if (user_index === -1) { return undefined }; //UserId not found
+  const userIndex = data.users.findIndex(user => user._id === userId);
+  if (userIndex === -1) { return undefined; } //UserId not found
 
-  data.users[user_index].role = role; //change role
+  data.users[userIndex].role = role; //change role
   //JSON needed to make a deep copy.
-  return JSON.parse(JSON.stringify(data.users[user_index]));
+  return JSON.parse(JSON.stringify(data.users[userIndex]));
 };
 
 /**
@@ -185,23 +185,19 @@ const updateUserRole = (userId, role) => {
  */
 const validateUser = user => {
 
-  var error_arr = [];
+  const errorArr = [];
+  const PropertyArray = ['name', 'email', 'password'];
 
-  if (!user.hasOwnProperty('name')) {
-    error_arr.push("Missing name");
+  PropertyArray.forEach(property => {
+    if(!Object.prototype.hasOwnProperty.call(user, property)) {
+      errorArr.push(`Missing ${property}`);
+    }
+  });
+  
+  if(!(user.role === 'customer' || user.role === 'admin') && user.role !== undefined) {
+    errorArr.push("Unknown role");
   }
-  if (!user.hasOwnProperty('email')) {
-    error_arr.push("Missing email");
-  }
-  if (!user.hasOwnProperty('password')) {
-    error_arr.push("Missing password");
-  }
-  if (user.hasOwnProperty('role')) {
-    if (!(user.role === 'customer' || user.role === 'admin'))
-      error_arr.push("Unknown role");
-  }
-  return error_arr;
-
+  return errorArr;
 };
 
 module.exports = {
