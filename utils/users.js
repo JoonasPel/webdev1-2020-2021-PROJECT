@@ -186,22 +186,18 @@ const updateUserRole = (userId, role) => {
 const validateUser = user => {
 
   const errorArr = [];
+  const PropertyArray = ['name', 'email', 'password'];
 
-  if (!Object.prototype.hasOwnProperty.call(user, 'name')) {
-    errorArr.push("Missing name");
-  }
-  if (!Object.prototype.hasOwnProperty.call(user, 'email')) {
-    errorArr.push("Missing email");
-  }
-  if (!Object.prototype.hasOwnProperty.call(user, 'password')) {
-    errorArr.push("Missing password");
-  }
-  if (Object.prototype.hasOwnProperty.call(user, 'role')) {
-    if (!(user.role === 'customer' || user.role === 'admin'))
-      errorArr.push("Unknown role");
+  PropertyArray.forEach(property => {
+    if(!Object.prototype.hasOwnProperty.call(user, property)) {
+      errorArr.push(`Missing ${property}`);
+    }
+  });
+  
+  if(!(user.role === 'customer' || user.role === 'admin') && user.role !== undefined) {
+    errorArr.push("Unknown role");
   }
   return errorArr;
-
 };
 
 module.exports = {
