@@ -68,3 +68,55 @@ const listUserHTML = (user) => {
  *       - Deleting a user successfully should show a notification message "Deleted user {User Name}"
  *       - Use createNotification() function from utils.js to create notifications
  */
+//listen for button clicks
+document.addEventListener('click', function(e) {
+    //get clicked element id and split it into array
+    let buttonId = e.target.id;
+    let actionUser = buttonId.split('-')
+
+    //catch clicking other than button elements
+    if (!(actionUser[0] === 'remove' || actionUser[0] === 'modify')) {
+        //reset buttonId to nothing
+        return buttonId = '';
+
+    }
+    //use array to decide function
+    else if (actionUser[0] === 'remove') {
+        let resp = deleteResourse('/api/users/' + actionUser[1]);
+        console.log(resp)
+
+
+    } else if (actionUser[0] === 'modify') {
+        console.log('modify')
+            //get user info from api by userid
+        getJSON("/api/users/" + actionUser[1]).then(data => {
+            modifyUser(data);
+        })
+
+    }
+}, false);
+
+function modifyUser(user) {
+    const formtemplate = document.getElementById('form-template');
+    document.getElementById("modify-user").innerHTML = '';
+    console.log(user)
+    let cloneForm = formtemplate.content.cloneNode(true);
+    //form id
+    cloneForm.getElementById("edit-user-form").id = "edit-user-" + user._id;
+    //header
+    cloneForm.querySelector("h2").textContent = "Modify user " + user.name;
+    //
+    let form = cloneForm.querySelectorAll("input");
+
+    //id, name, email
+    form[0].value = user._id;
+    form[0].removeAttribute("disabled")
+    form[1].value = user.name;
+    form[1].removeAttribute("disabled")
+    form[2].value = user.email;
+    form[2].removeAttribute("disabled")
+
+    //append to contacts
+    document.getElementById("modify-user").appendChild(cloneForm);
+
+}
