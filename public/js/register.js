@@ -8,7 +8,7 @@
  *       - Use postOrPutJSON() function from utils.js to send your data back to server
  */
 const form = document.querySelector("#register-form");
-const name = document.querySelector('#name');
+const name_ = document.querySelector('#name');
 const email = document.querySelector('#email');
 const password = document.querySelector('#password');
 const passwordConfirmation = document.querySelector('#passwordConfirmation');
@@ -20,13 +20,13 @@ form.addEventListener('submit', async function(event) {
 
 
     //Prevent registration if passwords don't match
-    if (password.value != passwordConfirmation.value) {
+    if (password.value !== passwordConfirmation.value) {
         createNotification("Passwords do not match!", "notifications-container", false);      
     } else {
-        let user_data = {"name": name.value, "email": email.value, "password": password.value};
-        let response = await postOrPutJSON('/api/register', 'POST', user_data);
+        const userData = {"name": name_.value, "email": email.value, "password": password.value};
+        const response = await postOrPutJSON('/api/register', 'POST', userData);
 
-        if(response.status == 201) {
+        if(response.status === 201) {
             //registration successful
             createNotification("Successful", "notifications-container");
             form.reset();  
