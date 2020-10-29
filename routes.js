@@ -1,7 +1,7 @@
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
-const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole } = require('./utils/users');
+const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
 
 /**
@@ -58,7 +58,7 @@ const matchUserId = url => {
     return matchIdRoute(url, 'users');
 };
 
-const handleRequest = async(request, response) => {
+const handleRequest = async (request, response) => {
     const { url, method, headers } = request;
     const filePath = new URL(url, `http://${headers.host}`).pathname;
 
@@ -71,7 +71,43 @@ const handleRequest = async(request, response) => {
     if (matchUserId(filePath)) {
         // TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-        throw new Error('Not Implemented');
+        let current_user = await getCurrentUser(request);
+        let target_user_id = url.substring(11)
+        let target_user = getUserById(target_user_id);
+
+        if (current_user == null) {
+            return responseUtils.basicAuthChallenge(response);
+        } else if (current_user.role != 'admin') {
+            return responseUtils.forbidden(response);
+        } else if (target_user == null) {
+            return responseUtils.notFound(response);
+        }
+
+        switch (method.toUpperCase()) {
+            case 'GET':
+                //responses with user object found by id 
+                return responseUtils.sendJson(response, target_user);
+
+            case 'PUT':
+                //parse request body and get role.
+                let role = (await parseBodyJson(request)).role;   
+                try {
+                    //update role, returns copy of user or throws if role is unknown.
+                    var updated_user = updateUserRole(target_user_id, role);
+                } catch (error) {
+                    return responseUtils.badRequest(response, error);
+                }          
+                //update success (didn't throw)
+                return responseUtils.sendJson(response, updated_user);
+
+            case 'DELETE':
+                //deletes user then responses with deleted user (object)
+                let deleted_user = deleteUserById(target_user_id);
+                return responseUtils.sendJson(response, deleted_user);
+
+            default:
+                throw new Error('Invalid method');
+        }
     }
 
     // Default to 404 Not Found if unknown url
@@ -97,8 +133,8 @@ const handleRequest = async(request, response) => {
 
         //current user object, null if Authorization not correct
         let current_user = await getCurrentUser(request);
- 
-        if(current_user == null) {
+
+        if (current_user == null) {
             return responseUtils.basicAuthChallenge(response);
         } else if (current_user.role != 'admin') {
             return responseUtils.forbidden(response);
