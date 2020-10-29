@@ -42,7 +42,7 @@ const listUserHTML = (user) => {
     clone.querySelectorAll("p")[1].id = "role-" + user._id;
     //buttons
     clone.querySelectorAll("button")[0].id = "modify-" + user._id;
-    clone.querySelectorAll("button")[1].id = "remove-" + user._id;
+    clone.querySelectorAll("button")[1].id = "delete-" + user._id;
 
     //append to contacts
     document.getElementById("users-container").appendChild(clone);
@@ -69,22 +69,20 @@ const listUserHTML = (user) => {
  *       - Use createNotification() function from utils.js to create notifications
  */
 //listen for button clicks
-document.addEventListener('click', function (e) {
+document.addEventListener('click', function(e) {
     //get clicked element id and split it into array
     let buttonId = e.target.id;
     let actionUser = buttonId.split('-')
 
     //catch clicking other than button elements
-    if (!(actionUser[0] === 'remove' || actionUser[0] === 'modify')) {
+    if (!(actionUser[0] === 'delete' || actionUser[0] === 'modify')) {
         //reset buttonId to nothing
         return buttonId = '';
 
     }
     //use array to decide function
-    else if (actionUser[0] === 'remove') {
+    else if (actionUser[0] === 'delete') {
         deleteUser(actionUser);
-
-
 
     } else if (actionUser[0] === 'modify') {
         //console.log('modify')
@@ -95,6 +93,7 @@ document.addEventListener('click', function (e) {
 
     }
 }, false);
+
 
 function modifyUser(user) {
     const formtemplate = document.getElementById('form-template');
@@ -107,7 +106,7 @@ function modifyUser(user) {
     cloneForm.querySelector("h2").textContent = "Modify user " + user.name;
     //
     let form = cloneForm.querySelectorAll("input");
-
+    console.log(user);
     //id, name, email
     form[0].value = user._id;
     form[0].removeAttribute("disabled")
@@ -116,8 +115,58 @@ function modifyUser(user) {
     form[2].value = user.email;
     form[2].removeAttribute("disabled")
 
+
     //append to contacts
     document.getElementById("modify-user").appendChild(cloneForm);
+
+    //listen for submit button
+    const updateForm = document.querySelector('form');
+    console.log(updateForm[3].value)
+
+    //handle Update-button click
+    updateForm.addEventListener('submit', async function(event) {
+        //cancel the default action
+        event.preventDefault();
+        //parse data to server
+        const userData = {
+            "_id": updateForm[0].value,
+            "name": updateForm[1].value,
+            "email": updateForm[2].value,
+            "password": user.password,
+            "role": updateForm[3].value
+        };
+        //call updateuser function
+        updateUser(userData);
+
+    });
+
+}
+
+/*
+ *Not working yet. Todo: postOrPutJSON don't modify other infos than role. Should it be changed or used some other function?
+ * List not updating after update
+ */
+async function updateUser(userData) {
+    console.log(userData);
+    try {
+        postOrPutJSON("/api/users/" + userData._id, "PUT", userData)
+            .then((data) => {
+                return data
+            })
+            .then((udata) => {
+                console.log(udata)
+                return udata;
+            })
+        createNotification('Updated user', userData.name);
+
+
+
+
+    } catch (error) {
+        console.log(error)
+            //error in updating user
+        createNotification(error, 'notifications-container', false);
+    }
 
 }
 
@@ -129,7 +178,7 @@ async function deleteUser(actionUser) {
         //remove div from html
         document.getElementById('user-' + actionUser[1]).remove();
         //show notification to user
-        createNotification('Deleted user ' + resp.email, 'notifications-container');
+        createNotification('Deleted user ' + resp.name, 'notifications-container');
     } catch (error) {
         //deleteResourse() did throw, deleting user was unsuccessful
         createNotification(error, 'notifications-container', false);
