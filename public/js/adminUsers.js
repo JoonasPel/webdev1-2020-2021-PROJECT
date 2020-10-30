@@ -109,7 +109,6 @@ function modifyUser(user) {
     console.log(user);
     //id, name, email
     form[0].value = user._id;
-    form[0].removeAttribute("disabled")
     form[1].value = user.name;
     form[1].removeAttribute("disabled")
     form[2].value = user.email;
@@ -144,29 +143,31 @@ function modifyUser(user) {
 
 /*
  *Not working yet. Todo: postOrPutJSON don't modify other infos than role. Should it be changed or used some other function?
- * List not updating after update
+ * 
  */
 async function updateUser(userData) {
-    console.log(userData);
-    try {
-        postOrPutJSON("/api/users/" + userData._id, "PUT", userData)
-            .then((data) => {
-                return data
-            })
-            .then((udata) => {
-                console.log(udata)
-                return udata;
-            })
-        createNotification('Updated user', userData.name);
+    //use postOrPutJSON function to update user details
+    const response = await postOrPutJSON("/api/users/" + userData._id, "PUT", userData);
+    //if succesfull
+    if (response.status === 200) {
+        // update listing, show notify and hide "modify-user" element.
+        response.data.then((data) => {
 
+            createNotification('Updated user ' + data.name, 'notifications-container')
+                //name update
+            document.getElementById("name-" + data._id).textContent = data.name;
+            //email update
+            document.getElementById("email-" + data._id).textContent = data.email;
+            //role update
+            document.getElementById("role-" + data._id).textContent = data.role;
 
-
-
-    } catch (error) {
-        console.log(error)
-            //error in updating user
-        createNotification(error, 'notifications-container', false);
+            //remove update form
+            document.getElementById("edit-user-" + data._id).remove()
+        })
+    } else {
+        createNotification(response.status, 'notifications-container', false);
     }
+
 
 }
 
