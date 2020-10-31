@@ -18,35 +18,35 @@
 const template = document.getElementById('user-template');
 
 getJSON("/api/users").then(data => {
-    for (user of data) {
+    for (const user of data) {
         listUserHTML(user);
     }
 });
 
 const listUserHTML = (user) => {
     //clone template
-    var clone = template.content.cloneNode(true);
+    const clone = template.content.cloneNode(true);
 
     //div
-    clone.querySelector(".item-row").id = "user-" + user._id;
+    clone.querySelector(".item-row").id = `user-${user._id}`;
 
     //name
     clone.querySelector("h3").textContent = user.name;
-    clone.querySelector("h3").id = "name-" + user._id;
+    clone.querySelector("h3").id = `name-${user._id}`;
 
     //email
     clone.querySelectorAll("p")[0].textContent = user.email;
-    clone.querySelectorAll("p")[0].id = "email-" + user._id;
+    clone.querySelectorAll("p")[0].id = `email-${user._id}`;
     //role
     clone.querySelectorAll("p")[1].textContent = user.role;
-    clone.querySelectorAll("p")[1].id = "role-" + user._id;
+    clone.querySelectorAll("p")[1].id = `role-${user._id}`;
     //buttons
-    clone.querySelectorAll("button")[0].id = "modify-" + user._id;
-    clone.querySelectorAll("button")[1].id = "delete-" + user._id;
+    clone.querySelectorAll("button")[0].id = `modify-${user._id}`;
+    clone.querySelectorAll("button")[1].id = `delete-${user._id}`;
 
     //append to contacts
     document.getElementById("users-container").appendChild(clone);
-}
+};
 
 
 /**
@@ -72,7 +72,7 @@ const listUserHTML = (user) => {
 document.addEventListener('click', function(e) {
     //get clicked element id and split it into array
     let buttonId = e.target.id;
-    let actionUser = buttonId.split('-')
+    const actionUser = buttonId.split('-');
 
     //catch clicking other than button elements
     if (!(actionUser[0] === 'delete' || actionUser[0] === 'modify')) {
@@ -87,32 +87,32 @@ document.addEventListener('click', function(e) {
     } else if (actionUser[0] === 'modify') {
         //console.log('modify')
         //get user info from api by userid
-        getJSON("/api/users/" + actionUser[1]).then(data => {
+        getJSON(`/api/users/${actionUser[1]}`).then(data => {
             modifyUser(data);
-        })
+        });
 
     }
 }, false);
 
 
-function modifyUser(user) {
+window.modifyUser = function (user) {
     const formtemplate = document.getElementById('form-template');
     document.getElementById("modify-user").innerHTML = '';
     //console.log(user)
-    let cloneForm = formtemplate.content.cloneNode(true);
+    const cloneForm = formtemplate.content.cloneNode(true);
     //form id
-    cloneForm.getElementById("edit-user-form").id = "edit-user-" + user._id;
+    cloneForm.getElementById("edit-user-form").id = `edit-user-${user._id}`;
     //header
-    cloneForm.querySelector("h2").textContent = "Modify user " + user.name;
+    cloneForm.querySelector("h2").textContent = `Modify user${user.name}`;
     //
-    let form = cloneForm.querySelectorAll("input");
+    const form = cloneForm.querySelectorAll("input");
     console.log(user);
     //id, name, email
     form[0].value = user._id;
     form[1].value = user.name;
-    form[1].removeAttribute("disabled")
+    form[1].removeAttribute("disabled");
     form[2].value = user.email;
-    form[2].removeAttribute("disabled")
+    form[2].removeAttribute("disabled");
 
 
     //append to contacts
@@ -120,10 +120,10 @@ function modifyUser(user) {
 
     //listen for submit button
     const updateForm = document.querySelector('form');
-    console.log(updateForm[3].value)
+    console.log(updateForm[3].value);
 
     //handle Update-button click
-    updateForm.addEventListener('submit', async function(event) {
+    updateForm.addEventListener('submit', function(event) {
         //cancel the default action
         event.preventDefault();
         //parse data to server
@@ -139,50 +139,47 @@ function modifyUser(user) {
 
     });
 
-}
+};
 
 /*
  *Not working yet. Todo: postOrPutJSON don't modify other infos than role. Should it be changed or used some other function?
  * 
  */
-async function updateUser(userData) {
+window.updateUser = async function (userData) {
     //use postOrPutJSON function to update user details
-    const response = await postOrPutJSON("/api/users/" + userData._id, "PUT", userData);
+    const response = await postOrPutJSON(`/api/users/${userData._id}`, "PUT", userData);
     //if succesfull
     if (response.status === 200) {
         // update listing, show notify and hide "modify-user" element.
         response.data.then((data) => {
 
-            createNotification('Updated user ' + data.name, 'notifications-container')
-                //name update
-            document.getElementById("name-" + data._id).textContent = data.name;
+            createNotification(`Updated user ${data.name}`, 'notifications-container');
+            //name update
+            document.getElementById(`name-${data._id}`).textContent = data.name;
             //email update
-            document.getElementById("email-" + data._id).textContent = data.email;
+            document.getElementById(`email-${data._id}`).textContent = data.email;
             //role update
-            document.getElementById("role-" + data._id).textContent = data.role;
+            document.getElementById(`role-${data._id}`).textContent = data.role;
 
             //remove update form
-            document.getElementById("edit-user-" + data._id).remove()
-        })
+            document.getElementById(`edit-user-${data._id}`).remove();
+        });
     } else {
         createNotification(response.status, 'notifications-container', false);
     }
+};
 
-
-}
-
-async function deleteUser(actionUser) {
-
+window.deleteUser = async function(actionUser) {
     try {
         //try to delete user from server database, throws if unsuccessfull
-        const resp = await deleteResourse('/api/users/' + actionUser[1]);
+        const resp = await deleteResourse(`/api/users/${actionUser[1]}`);
         //remove div from html
-        document.getElementById('user-' + actionUser[1]).remove();
+        document.getElementById(`user-${actionUser[1]}`).remove();
         //show notification to user
-        createNotification('Deleted user ' + resp.name, 'notifications-container');
+        createNotification(`Deleted user ${resp.name}`, 'notifications-container');
     } catch (error) {
         //deleteResourse() did throw, deleting user was unsuccessful
         createNotification(error, 'notifications-container', false);
     }
 
-}
+};
