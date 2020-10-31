@@ -71,40 +71,41 @@ const handleRequest = async (request, response) => {
     if (matchUserId(filePath)) {
         // TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-        let current_user = await getCurrentUser(request);
-        let target_user_id = url.substring(11)
-        let target_user = getUserById(target_user_id);
+        const currentUser = await getCurrentUser(request);
+        const targetUserID = url.substring(11);
+        const targetUser = getUserById(targetUserID);
 
-        if (current_user == null) {
+        if (currentUser === null || currentUser === undefined) {
             return responseUtils.basicAuthChallenge(response);
-        } else if (current_user.role != 'admin') {
+        } else if (currentUser.role !== 'admin') {
             return responseUtils.forbidden(response);
-        } else if (target_user == null) {
+        } else if (targetUser === null || targetUser === undefined) {
             return responseUtils.notFound(response);
         }
 
         switch (method.toUpperCase()) {
-            case 'GET':
+            case 'GET': {
                 //responses with user object found by id 
-                return responseUtils.sendJson(response, target_user);
-
-            case 'PUT':
+                return responseUtils.sendJson(response, targetUser);
+            }
+            case 'PUT': {
                 //parse request body and get role.
-                let role = (await parseBodyJson(request)).role;   
+                const role = (await parseBodyJson(request)).role;
+                let updatedUser;
                 try {
                     //update role, returns copy of user or throws if role is unknown.
-                    var updated_user = updateUserRole(target_user_id, role);
+                    updatedUser = updateUserRole(targetUserID, role);
                 } catch (error) {
                     return responseUtils.badRequest(response, error);
                 }          
                 //update success (didn't throw)
-                return responseUtils.sendJson(response, updated_user);
-
-            case 'DELETE':
+                return responseUtils.sendJson(response, updatedUser);
+            }
+            case 'DELETE': {
                 //deletes user then responses with deleted user (object)
-                let deleted_user = deleteUserById(target_user_id);
-                return responseUtils.sendJson(response, deleted_user);
-
+                const deletedUser = deleteUserById(targetUserID);
+                return responseUtils.sendJson(response, deletedUser);
+            }
             default:
                 throw new Error('Invalid method');
         }
@@ -132,11 +133,11 @@ const handleRequest = async (request, response) => {
         // TODO: 8.4 Add authentication (only allowed to users with role "admin")
 
         //current user object, null if Authorization not correct
-        let current_user = await getCurrentUser(request);
+        const currentUser = await getCurrentUser(request);
 
-        if (current_user == null) {
+        if (currentUser === null || currentUser === undefined) {
             return responseUtils.basicAuthChallenge(response);
-        } else if (current_user.role != 'admin') {
+        } else if (currentUser.role !== 'admin') {
             return responseUtils.forbidden(response);
         } else {
             return responseUtils.sendJson(response, getAllUsers());
@@ -153,7 +154,7 @@ const handleRequest = async (request, response) => {
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
         const parsedBody = await parseBodyJson(request);
         const validatedUserMessage = validateUser(parsedBody);
-        if (!validatedUserMessage.length == 0) {
+        if (validatedUserMessage.length !== 0) {
             return responseUtils.badRequest(response, validatedUserMessage);
         } else if (emailInUse(parsedBody.email)) {
             return responseUtils.badRequest(response, 'Bad Request');
@@ -163,7 +164,7 @@ const handleRequest = async (request, response) => {
             return responseUtils.createdResource(response, newUser);
 
         }
-    };
-}
+    }
+};
 
 module.exports = { handleRequest };
