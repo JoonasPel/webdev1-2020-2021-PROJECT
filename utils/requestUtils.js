@@ -11,22 +11,23 @@ const getCredentials = request => {
     //       You need to first decode the header back to its original form ("email:password").
     //  See: https://attacomsian.com/blog/nodejs-base64-encode-decode
     //       https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
-    let header_auth = request.headers.authorization;
+    const headerAuth = request.headers.authorization;
 
 
     //check header validity
-    if (header_auth == null || header_auth.substring(0, 6) != 'Basic ') {
+    if (headerAuth === undefined || headerAuth === null
+         || headerAuth.substring(0, 6) !== 'Basic ') {
         return null;
     } else {
         //split header into array
-        let encodedAuth = header_auth.split(' ');
+        const encodedAuth = headerAuth.split(' ');
 
         // create a buffer from data
-        let buff = Buffer.from(encodedAuth[1], 'base64');
+        const buff = Buffer.from(encodedAuth[1], 'base64');
 
         // decode buffer as UTF-8
-        let str = buff.toString('utf-8');
-        let authorizationData = str.split(':')
+        const str = buff.toString('utf-8');
+        const authorizationData = str.split(':');
 
         // seturn array of user, password
 
@@ -42,17 +43,17 @@ const getCredentials = request => {
  */
 const acceptsJson = request => {
 
-    let header_accepted = request.headers['accept'];
+    const headerAccepted = request.headers['accept'];
     //check if header missing
-    if (header_accepted === undefined) {
+    if (headerAccepted === undefined) {
         return false;
-    };
+    }
     // check if header includes required types
-    if (header_accepted.includes('application/json') || header_accepted.includes('*/*')) {
+    if (headerAccepted.includes('application/json') || headerAccepted.includes('*/*')) {
         return true;
     } else {
         return false;
-    };
+    }
 };
 
 /**
@@ -66,7 +67,7 @@ const isJson = request => {
         return true;
     } else {
         return false;
-    };
+    }
 };
 
 /**
