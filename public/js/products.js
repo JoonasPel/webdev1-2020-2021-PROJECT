@@ -28,7 +28,7 @@ const listProductHTML = (product) => {
     clone.querySelectorAll("p")[1].textContent = product.price;
     clone.querySelectorAll("p")[1].id = `price-${product._id}`;
     //buttons
-    clone.querySelectorAll("button")[0].id = `addToCart-${product._id}`;
+    clone.querySelectorAll("button")[0].id = `add-to-cart-${product._id}`;
 
     //append to product list
     document.getElementById("products-container").appendChild(clone);
