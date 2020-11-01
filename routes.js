@@ -3,6 +3,7 @@ const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
+const { getAllProducts } = require('./public/js/products');
 
 /**
  * Known API routes and their allowed methods
@@ -12,7 +13,8 @@ const { getCurrentUser } = require('./auth/auth');
  */
 const allowedMethods = {
     '/api/register': ['POST'],
-    '/api/users': ['GET']
+    '/api/users': ['GET'],
+    '/api/products': ['GET']
 };
 
 /**
@@ -58,7 +60,7 @@ const matchUserId = url => {
     return matchIdRoute(url, 'users');
 };
 
-const handleRequest = async (request, response) => {
+const handleRequest = async(request, response) => {
     const { url, method, headers } = request;
     const filePath = new URL(url, `http://${headers.host}`).pathname;
 
@@ -84,28 +86,31 @@ const handleRequest = async (request, response) => {
         }
 
         switch (method.toUpperCase()) {
-            case 'GET': {
-                //responses with user object found by id 
-                return responseUtils.sendJson(response, targetUser);
-            }
-            case 'PUT': {
-                //parse request body and get role.
-                const role = (await parseBodyJson(request)).role;
-                let updatedUser;
-                try {
-                    //update role, returns copy of user or throws if role is unknown.
-                    updatedUser = updateUserRole(targetUserID, role);
-                } catch (error) {
-                    return responseUtils.badRequest(response, error);
-                }          
-                //update success (didn't throw)
-                return responseUtils.sendJson(response, updatedUser);
-            }
-            case 'DELETE': {
-                //deletes user then responses with deleted user (object)
-                const deletedUser = deleteUserById(targetUserID);
-                return responseUtils.sendJson(response, deletedUser);
-            }
+            case 'GET':
+                {
+                    //responses with user object found by id 
+                    return responseUtils.sendJson(response, targetUser);
+                }
+            case 'PUT':
+                {
+                    //parse request body and get role.
+                    const role = (await parseBodyJson(request)).role;
+                    let updatedUser;
+                    try {
+                        //update role, returns copy of user or throws if role is unknown.
+                        updatedUser = updateUserRole(targetUserID, role);
+                    } catch (error) {
+                        return responseUtils.badRequest(response, error);
+                    }
+                    //update success (didn't throw)
+                    return responseUtils.sendJson(response, updatedUser);
+                }
+            case 'DELETE':
+                {
+                    //deletes user then responses with deleted user (object)
+                    const deletedUser = deleteUserById(targetUserID);
+                    return responseUtils.sendJson(response, deletedUser);
+                }
             default:
                 throw new Error('Invalid method');
         }
@@ -141,6 +146,22 @@ const handleRequest = async (request, response) => {
             return responseUtils.forbidden(response);
         } else {
             return responseUtils.sendJson(response, getAllUsers());
+        }
+    }
+
+    // GET all products 
+    if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
+
+        //current user object, null if Authorization not correct
+        const currentUser = await getCurrentUser(request);
+        // check user status
+        if (currentUser === null || currentUser === undefined) {
+            return responseUtils.basicAuthChallenge(response);
+
+        }
+        // return all products in json
+        else {
+            return responseUtils.sendJson(response, getAllProducts());
         }
     }
 
