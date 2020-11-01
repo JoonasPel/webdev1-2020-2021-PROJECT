@@ -33,3 +33,32 @@ const listProductHTML = (product) => {
     //append to product list
     document.getElementById("products-container").appendChild(clone);
 };
+
+//listen for button clicks
+document.addEventListener('click', function(e) {
+
+    //get clicked element id and split it into array
+    let buttonId = e.target.id;
+    const clickedProduct = buttonId.split('-');
+
+    console.log(clickedProduct[0])
+
+    //catch clicking other than button elements
+    if (!(clickedProduct[0] === 'add')) {
+        //reset buttonId to nothing if other than button click
+        return buttonId = '';
+
+    } else {
+        //check if product is already in cart
+        if (sessionStorage.getItem(clickedProduct[3]) !== null) {
+            let count = Number(sessionStorage.getItem(clickedProduct[3]))
+                //increase count
+            sessionStorage.setItem(clickedProduct[3], count + 1)
+
+        } else {
+            sessionStorage.setItem(clickedProduct[3], 1);
+            //TODO add notification
+            //createNotification('Added ' + ' to cart!', 'notifications-container')
+        }
+    }
+}, false);
