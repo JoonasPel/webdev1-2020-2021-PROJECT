@@ -1,19 +1,35 @@
 /**
- * Object to store products
+ * Uses getJSON() to fetch all products from backend and lists them.
  */
 
-// make copies of products (prevents changing from outside this module/file)
-const products = { products: require('../../products.json').map(product => ({...product })) };
+const template = document.getElementById('product-template');
 
+getJSON("/api/products").then(data => {
+    for (const product of data) {
+        listProductHTML(product);
+    }
+});
 
-/*
- *Return all products loaded from Json
- */
-const getAllProducts = () => {
-    //JSON needed to make a deep copy.
-    return JSON.parse(JSON.stringify(products.products));
-};
+const listProductHTML = (product) => {
+    //clone template
+    const clone = template.content.cloneNode(true);
 
-module.exports = {
-    getAllProducts
+    //div
+    clone.querySelector(".item-row").id = `product-${product._id}`;
+
+    //name
+    clone.querySelector("h3").textContent = product.name;
+    clone.querySelector("h3").id = `name-${product._id}`;
+
+    //description
+    clone.querySelectorAll("p")[0].textContent = product.description;
+    clone.querySelectorAll("p")[0].id = `description-${product._id}`;
+    //price
+    clone.querySelectorAll("p")[1].textContent = product.price;
+    clone.querySelectorAll("p")[1].id = `price-${product._id}`;
+    //buttons
+    clone.querySelectorAll("button")[0].id = `addToCart-${product._id}`;
+
+    //append to product list
+    document.getElementById("products-container").appendChild(clone);
 };

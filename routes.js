@@ -3,7 +3,7 @@ const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
-const { getAllProducts } = require('./public/js/products');
+const { getAllProducts } = require('./utils/products');
 
 /**
  * Known API routes and their allowed methods
