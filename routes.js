@@ -145,17 +145,7 @@ const handleRequest = async(request, response) => {
             return responseUtils.sendJson(response, targetProduct);
         }
     }
-    // GET All products 
-    if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
-        //current user object, null if Authorization not correct
-        const currentUser = await getCurrentUser(request);
-        // check user status
-        if (currentUser === null || currentUser === undefined) {
-            return responseUtils.basicAuthChallenge(response);
-        } else {
-            return responseUtils.sendJson(response, getAllProducts());
-        }
-    }
+
 
     // Default to 404 Not Found if unknown url
     if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
@@ -172,7 +162,17 @@ const handleRequest = async(request, response) => {
     if (!acceptsJson(request)) {
         return responseUtils.contentTypeNotAcceptable(response);
     }
-
+    // GET All products 
+    if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
+        //current user object, null if Authorization not correct
+        const currentUser = await getCurrentUser(request);
+        // check user status
+        if (currentUser === null || currentUser === undefined) {
+            return responseUtils.basicAuthChallenge(response);
+        } else {
+            return responseUtils.sendJson(response, getAllProducts());
+        }
+    }
     // GET all users
     if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
         // TODO: 8.3 Return all users as JSON
