@@ -67,9 +67,9 @@ document.addEventListener('click', function(e) {
     let command = actionCart[0];
     let itemId = actionCart[1]
     let count = '';
-
+    console.log(command);
     //catch clicking other than button elements
-    if (!(command === 'plus' || command === 'minus')) {
+    if (!(command === 'plus' || command === 'minus' || command === 'place')) {
         //reset buttonId to nothing
         return buttonId = '';
 
@@ -80,7 +80,12 @@ document.addEventListener('click', function(e) {
 
     } else if (command === 'plus') {
         increaseProductCount(itemId);
+    } else if (command === 'place') {
+        //clear shopping cart from UI and session storage
+        clearCart();
+        createNotification('Succesfully created an order!', 'notifications-container');
     }
+
 }, false);
 
 function decreaseProductCount(itemId) {
@@ -110,6 +115,13 @@ function increaseProductCount(itemId) {
     sessionStorage.setItem(itemId, count);
     //update amount in page
     document.getElementById(`amount-${itemId}`).innerText = count + 'x';
+}
+
+function clearCart() {
+    //clears session storage
+    sessionStorage.clear();
+    //clears UI, all items have class 'item-row'
+    document.querySelectorAll('.item-row').forEach(item => item.remove());
 }
 
 getAllProductsFromCart();
