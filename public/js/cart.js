@@ -26,7 +26,11 @@ const generateProductIntoCart = (product, count) => {
     })
 }
 
-
+/**
+ * 
+ * @param {*} productDetails Object which should be inserted to page
+ * @param {*} amount amount of products added to cart
+ */
 const generateDom = (productDetails, amount) => {
     //clone template
     const clone = template.content.cloneNode(true);

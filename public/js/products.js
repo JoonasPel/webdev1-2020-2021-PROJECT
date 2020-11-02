@@ -4,7 +4,9 @@
 
 const template = document.getElementById('product-template');
 
-
+/** 
+ * Get products from API
+ */
 getJSON("/api/products").then(data => {
     console.log(data)
     for (const product of data) {
@@ -13,6 +15,11 @@ getJSON("/api/products").then(data => {
     }
 });
 
+/**
+ * Function to insert products into DOM
+ * 
+ * @param {*} product item to insert to page
+ */
 const listProductHTML = (product) => {
     //clone template
     const clone = template.content.cloneNode(true);
