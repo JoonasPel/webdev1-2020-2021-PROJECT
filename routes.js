@@ -66,8 +66,7 @@ const matchUserId = url => {
  * @param {string} url filePath
  * @returns {boolean}
  */
-const matcProductId = url => {
-    console.log('matcproductId ' + url)
+const matchProductId = url => {
     return matchIdRoute(url, 'products');
 };
 
@@ -81,7 +80,7 @@ const handleRequest = async(request, response) => {
         return renderPublic(fileName, response);
     }
     /**
-     * Test if one user is looked or manipulatedt throught 
+     * Test if one user is looked or manipulated throught 
      */
     if (matchUserId(filePath)) {
         // TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
@@ -132,10 +131,8 @@ const handleRequest = async(request, response) => {
     /**
      * Get one product from /api/products({product_id}) as JSON
      */
-    if (matcProductId(filePath)) {
-
+    if (matchProductId(filePath)) {
         const targetProductId = url.substring(14);
-        console.log(targetProductId)
         const targetProduct = getProductById(targetProductId);
         //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
@@ -149,9 +146,8 @@ const handleRequest = async(request, response) => {
         }
     }
     // GET All products 
-    if (filePath === '/api/products/' && method.toUpperCase() === 'GET') {
-        console.log('tänn')
-            //current user object, null if Authorization not correct
+    if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
+        //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
         // check user status
         if (currentUser === null || currentUser === undefined) {

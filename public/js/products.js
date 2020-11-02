@@ -4,8 +4,11 @@
 
 const template = document.getElementById('product-template');
 
+
 getJSON("/api/products").then(data => {
+    console.log(data)
     for (const product of data) {
+        console.log(product)
         listProductHTML(product);
     }
 });
