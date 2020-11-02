@@ -48,6 +48,10 @@ const generateDom = (productDetails, amount) => {
     clone.querySelectorAll("p")[1].textContent = amount;
     clone.querySelectorAll("p")[1].id = `amount-${productDetails._id}`;
 
+    //buttons
+    clone.querySelectorAll("button")[0].id = `plus-${productDetails._id}`;
+    clone.querySelectorAll("button")[1].id = `minus-${productDetails._id}`;
+
     //append to product list
     document.getElementById("cart-container").appendChild(clone);
 
