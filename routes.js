@@ -3,7 +3,7 @@ const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
-const { getAllProducts } = require('./utils/products');
+const { getAllProducts, getProductById } = require('./utils/products');
 
 /**
  * Known API routes and their allowed methods
@@ -60,6 +60,17 @@ const matchUserId = url => {
     return matchIdRoute(url, 'users');
 };
 
+/**
+ * Does the URL match /api/products/{id}
+ *
+ * @param {string} url filePath
+ * @returns {boolean}
+ */
+const matcProductId = url => {
+    console.log('matcproductId ' + url)
+    return matchIdRoute(url, 'products');
+};
+
 const handleRequest = async(request, response) => {
     const { url, method, headers } = request;
     const filePath = new URL(url, `http://${headers.host}`).pathname;
@@ -69,7 +80,9 @@ const handleRequest = async(request, response) => {
         const fileName = filePath === '/' || filePath === '' ? 'index.html' : filePath;
         return renderPublic(fileName, response);
     }
-
+    /**
+     * Test if one user is looked or manipulatedt throught 
+     */
     if (matchUserId(filePath)) {
         // TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
@@ -116,6 +129,38 @@ const handleRequest = async(request, response) => {
         }
     }
 
+    /**
+     * Get one product from /api/products({product_id}) as JSON
+     */
+    if (matcProductId(filePath)) {
+
+        const targetProductId = url.substring(14);
+        console.log(targetProductId)
+        const targetProduct = getProductById(targetProductId);
+        //current user object, null if Authorization not correct
+        const currentUser = await getCurrentUser(request);
+        // check user status
+        if (currentUser === null || currentUser === undefined) {
+            return responseUtils.basicAuthChallenge(targetProduct);
+
+        } else {
+
+            return responseUtils.sendJson(response, targetProduct);
+        }
+    }
+    // GET All products 
+    if (filePath === '/api/products/' && method.toUpperCase() === 'GET') {
+        console.log('tänn')
+            //current user object, null if Authorization not correct
+        const currentUser = await getCurrentUser(request);
+        // check user status
+        if (currentUser === null || currentUser === undefined) {
+            return responseUtils.basicAuthChallenge(response);
+        } else {
+            return responseUtils.sendJson(response, getAllProducts());
+        }
+    }
+
     // Default to 404 Not Found if unknown url
     if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
 
@@ -146,22 +191,6 @@ const handleRequest = async(request, response) => {
             return responseUtils.forbidden(response);
         } else {
             return responseUtils.sendJson(response, getAllUsers());
-        }
-    }
-
-    // GET all products 
-    if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
-
-        //current user object, null if Authorization not correct
-        const currentUser = await getCurrentUser(request);
-        // check user status
-        if (currentUser === null || currentUser === undefined) {
-            return responseUtils.basicAuthChallenge(response);
-
-        }
-        // return all products in json
-        else {
-            return responseUtils.sendJson(response, getAllProducts());
         }
     }
 
