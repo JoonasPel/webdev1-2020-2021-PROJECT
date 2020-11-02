@@ -33,25 +33,26 @@ const generateProductIntoCart = (product, count) => {
  * @param {*} amount amount of products added to cart
  */
 const generateDom = (productDetails, amount) => {
+    let product_id = productDetails._id;
     //clone template
     const clone = template.content.cloneNode(true);
     //div
-    clone.querySelector(".item-row").id = `product-${productDetails._id}`;
+    clone.querySelector(".item-row").id = `product-${product_id}`;
 
     //name
     clone.querySelector("h3").textContent = productDetails.name;
-    clone.querySelector("h3").id = `name-${productDetails._id}`;
+    clone.querySelector("h3").id = `name-${product_id}`;
 
     //price
     clone.querySelectorAll("p")[0].textContent = productDetails.price;
-    clone.querySelectorAll("p")[0].id = `price-${productDetails._id}`;
+    clone.querySelectorAll("p")[0].id = `price-${product_id}`;
     //amount
     clone.querySelectorAll("p")[1].textContent = amount + 'x';
-    clone.querySelectorAll("p")[1].id = `amount-${productDetails._id}`;
+    clone.querySelectorAll("p")[1].id = `amount-${product_id}`;
 
     //buttons
-    clone.querySelectorAll("button")[0].id = `plus-${productDetails._id}`;
-    clone.querySelectorAll("button")[1].id = `minus-${productDetails._id}`;
+    clone.querySelectorAll("button")[0].id = `plus-${product_id}`;
+    clone.querySelectorAll("button")[1].id = `minus-${product_id}`;
 
     //append to product list
     document.getElementById("cart-container").appendChild(clone);
@@ -65,19 +66,11 @@ document.addEventListener('click', function(e) {
     let buttonId = e.target.id;
     const actionCart = buttonId.split('-');
     let command = actionCart[0];
-    let itemId = actionCart[1]
-    let count = '';
-    console.log(command);
-    //catch clicking other than button elements
-    if (!(command === 'plus' || command === 'minus' || command === 'place')) {
-        //reset buttonId to nothing
-        return buttonId = '';
-
-    }
+    let itemId = actionCart[1];
+    
     //use array to decide function
-    else if (command === 'minus') {
+    if (command === 'minus') {
         decreaseProductCount(itemId);
-
     } else if (command === 'plus') {
         increaseProductCount(itemId);
     } else if (command === 'place') {
@@ -109,11 +102,9 @@ function decreaseProductCount(itemId) {
 function increaseProductCount(itemId) {
     //amount of items 
     count = Number(sessionStorage.getItem(itemId));
-    //increase amount
-    count++;
-    //update session storage
-    sessionStorage.setItem(itemId, count);
-    //update amount in page
+    //update session storage with increased amount
+    sessionStorage.setItem(itemId, ++count);
+    //update amount in page, count is increased above
     document.getElementById(`amount-${itemId}`).innerText = count + 'x';
 }
 
