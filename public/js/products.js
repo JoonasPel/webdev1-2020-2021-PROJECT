@@ -8,9 +8,8 @@ const template = document.getElementById('product-template');
  * Get products from API
  */
 getJSON("/api/products").then(data => {
-    console.log(data)
+
     for (const product of data) {
-        console.log(product)
         listProductHTML(product);
     }
 });
@@ -45,13 +44,11 @@ const listProductHTML = (product) => {
 };
 
 //listen for button clicks
-document.addEventListener('click', function(e) {
-
+document.addEventListener('click', async function(e) {
     //get clicked element id and split it into array
     let buttonId = e.target.id;
     const clickedProduct = buttonId.split('-');
-
-    console.log(clickedProduct[0])
+    const product = await getJSON('/api/products/' + clickedProduct[3])
 
     //catch clicking other than button elements
     if (!(clickedProduct[0] === 'add')) {
@@ -66,9 +63,11 @@ document.addEventListener('click', function(e) {
             sessionStorage.setItem(clickedProduct[3], count + 1)
 
         } else {
+
             sessionStorage.setItem(clickedProduct[3], 1);
             //TODO add notification
-            //createNotification('Added ' + ' to cart!', 'notifications-container')
+
         }
+        createNotification('Added ' + product.name + ' to cart!', 'notifications-container');
     }
 }, false);
