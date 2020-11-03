@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const path = require('path');
+const dotEnvPath = path.resolve(__dirname, '../.env');
+require('dotenv').config({ path: dotEnvPath });
 
 /**
  * Get database connect URL.
@@ -9,8 +12,13 @@ const mongoose = require('mongoose');
  * @returns {string} connection URL
  */
 const getDbUrl = () => {
-  // TODO: 9.3 Implement this
-  throw new Error('Implement this');
+  //read DBURL value from .env file
+  const url = process.env.DBURL;
+  if (url === undefined) {
+    //DBURL not defined, return default url
+    return 'mongodb://localhost:27017/WebShopDb';
+  }
+  return url;
 };
 
 function connectDB () {
