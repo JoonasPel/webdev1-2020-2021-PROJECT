@@ -2,13 +2,12 @@
   const mongoose = require('mongoose');
   const Schema = mongoose.Schema;
 
-  function encrypter(password) {
-      //console.log()
-      if (password === '') {
-          console.log('tyhjä')
-          return
+  function encrypter(plainpasswd) {
+      //validate given password
+      if (plainpasswd === '' || plainpasswd.length < 10) {
+          return;
       }
-      let hash = bcrypt.hashSync(password, 10);
+      let hash = bcrypt.hashSync(plainpasswd, 10);
       return hash;
   }
 
