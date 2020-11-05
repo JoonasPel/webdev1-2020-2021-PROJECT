@@ -4,7 +4,7 @@
 
   function encrypter(plainpasswd) {
       //validate given password
-      if (plainpasswd === '' || plainpasswd.length < 10) {
+      if (plainpasswd.length < 10) {
           return;
       }
       let hash = bcrypt.hashSync(plainpasswd, 10);
