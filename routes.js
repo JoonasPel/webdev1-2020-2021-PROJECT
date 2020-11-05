@@ -4,6 +4,7 @@ const { renderPublic } = require('./utils/render');
 const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
 const { getAllProducts, getProductById } = require('./utils/products');
+const User = require('./models/user');
 
 /**
  * Known API routes and their allowed methods
@@ -87,7 +88,7 @@ const handleRequest = async(request, response) => {
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
         const currentUser = await getCurrentUser(request);
         const targetUserID = url.substring(11);
-        const targetUser = getUserById(targetUserID);
+        const targetUser = await User.findOne({_id: targetUserID});
 
         if (currentUser === null || currentUser === undefined) {
             return responseUtils.basicAuthChallenge(response);
@@ -120,8 +121,8 @@ const handleRequest = async(request, response) => {
             case 'DELETE':
                 {
                     //deletes user then responses with deleted user (object)
-                    const deletedUser = deleteUserById(targetUserID);
-                    return responseUtils.sendJson(response, deletedUser);
+                    await User.findOneAndDelete({_id: targetUserID});
+                    return responseUtils.sendJson(response, targetUser);
                 }
             default:
                 throw new Error('Invalid method');
@@ -186,7 +187,9 @@ const handleRequest = async(request, response) => {
         } else if (currentUser.role !== 'admin') {
             return responseUtils.forbidden(response);
         } else {
-            return responseUtils.sendJson(response, getAllUsers());
+            //array of all users
+            let allUsers = await User.find();
+            return responseUtils.sendJson(response, allUsers);
         }
     }
 
@@ -200,13 +203,19 @@ const handleRequest = async(request, response) => {
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
         const parsedBody = await parseBodyJson(request);
         const validatedUserMessage = validateUser(parsedBody);
+        
         if (validatedUserMessage.length !== 0) {
             return responseUtils.badRequest(response, validatedUserMessage);
-        } else if (emailInUse(parsedBody.email)) {
+        //checks if email is already in use
+        } else if (await User.exists({email: parsedBody.email})) {
             return responseUtils.badRequest(response, 'Bad Request');
         } else {
-            const newUser = saveNewUser(parsedBody);
-            newUser['role'] = 'customer';
+            //save new user
+            await User.create(parsedBody);
+            //update role to customer
+            await User.updateOne({email: parsedBody.email}, {role: 'customer'});
+            //get new user and return it as response
+            let newUser = await User.findOne({email: parsedBody.email});
             return responseUtils.createdResource(response, newUser);
 
         }
