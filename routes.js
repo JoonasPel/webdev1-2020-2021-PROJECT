@@ -88,7 +88,7 @@ const handleRequest = async(request, response) => {
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
         const currentUser = await getCurrentUser(request);
         const targetUserID = url.substring(11);
-        const targetUser = await User.findOne({_id: targetUserID});
+        const targetUser = await User.findOne({ _id: targetUserID });
 
         if (currentUser === null || currentUser === undefined) {
             return responseUtils.basicAuthChallenge(response);
@@ -111,7 +111,7 @@ const handleRequest = async(request, response) => {
                     let updatedUser;
                     try {
                         //update role, returns copy of user or throws if role is unknown.
-                        updatedUser = updateUserRole(targetUserID, role);
+                        updatedUser = await User.updateOne({ _id: targetUserID }, { role: role });
                     } catch (error) {
                         return responseUtils.badRequest(response, error);
                     }
@@ -121,7 +121,7 @@ const handleRequest = async(request, response) => {
             case 'DELETE':
                 {
                     //deletes user then responses with deleted user (object)
-                    await User.findOneAndDelete({_id: targetUserID});
+                    await User.findOneAndDelete({ _id: targetUserID });
                     return responseUtils.sendJson(response, targetUser);
                 }
             default:
@@ -202,20 +202,21 @@ const handleRequest = async(request, response) => {
         // TODO: 8.3 Implement registration
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
         const parsedBody = await parseBodyJson(request);
+        // console.log(parseBody)
         const validatedUserMessage = validateUser(parsedBody);
-        
+        // console.log(validatedUserMessage)
         if (validatedUserMessage.length !== 0) {
             return responseUtils.badRequest(response, validatedUserMessage);
-        //checks if email is already in use
-        } else if (await User.exists({email: parsedBody.email})) {
+            //checks if email is already in use
+        } else if (await User.exists({ email: parsedBody.email })) {
             return responseUtils.badRequest(response, 'Bad Request');
         } else {
             //save new user
             await User.create(parsedBody);
             //update role to customer
-            await User.updateOne({email: parsedBody.email}, {role: 'customer'});
+            await User.updateOne({ email: parsedBody.email }, { role: 'customer' });
             //get new user and return it as response
-            let newUser = await User.findOne({email: parsedBody.email});
+            let newUser = await User.findOne({ email: parsedBody.email });
             return responseUtils.createdResource(response, newUser);
 
         }
