@@ -121,8 +121,8 @@ const handleRequest = async(request, response) => {
             case 'DELETE':
                 {
                     //deletes user then responses with deleted user (object)
-                    const deletedUser = deleteUserById(targetUserID);
-                    return responseUtils.sendJson(response, deletedUser);
+                    await User.findOneAndDelete({_id: targetUserID});
+                    return responseUtils.sendJson(response, targetUser);
                 }
             default:
                 throw new Error('Invalid method');
@@ -210,8 +210,12 @@ const handleRequest = async(request, response) => {
         } else if (await User.exists({email: parsedBody.email})) {
             return responseUtils.badRequest(response, 'Bad Request');
         } else {
-            const newUser = saveNewUser(parsedBody);
-            newUser['role'] = 'customer';
+            //save new user
+            await User.create(parsedBody);
+            //update role to customer
+            await User.updateOne({email: parsedBody.email}, {role: 'customer'});
+            //get new user and return it as response
+            let newUser = await User.findOne({email: parsedBody.email});
             return responseUtils.createdResource(response, newUser);
 
         }
