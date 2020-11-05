@@ -4,6 +4,11 @@ const mongoose = require("mongoose");
 const { connectDB } = require('./models/db');
 
 connectDB();
+const connection = mongoose.connection;
+
+connection.once("open", function() {
+    console.log("MongoDB database connection established successfully");
+});
 
 
 const PORT = process.env.PORT || 3000;
