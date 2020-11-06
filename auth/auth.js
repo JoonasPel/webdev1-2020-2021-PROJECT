@@ -26,7 +26,7 @@ const getCurrentUser = async request => {
     const givenPassword = userCredentials[1];
     const currentUser = await User.findOne({ email: givenEmail });
 
-    if (currentUser.checkPassword(givenPassword)) {
+    if (await currentUser.checkPassword(givenPassword)) {
       // passwords matched
       return currentUser;
     } else {
