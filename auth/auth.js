@@ -25,12 +25,16 @@ const getCurrentUser = async request => {
     const givenEmail = userCredentials[0];
     const givenPassword = userCredentials[1];
     const currentUser = await User.findOne({ email: givenEmail });
-
+    //checks if user is not found from database
+    if(currentUser === null || currentUser === undefined) {
+      return null;
+    }
+    //check if password matches
     if (await currentUser.checkPassword(givenPassword)) {
-      // passwords matched
+      // password matched
       return currentUser;
     } else {
-      // passwords did not match
+      // password did not match
       return null;
     }
 

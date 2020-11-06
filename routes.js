@@ -111,7 +111,7 @@ const handleRequest = async(request, response) => {
                     let updatedUser;
                     try {
                         //update role, returns copy of user or throws if role is unknown.
-                        updatedUser = await User.updateOne({ _id: targetUserID }, { role: role });
+                        updatedUser = await User.updateOne({ _id: targetUserID }, { role: role }, { runValidators: true});
                     } catch (error) {
                         return responseUtils.badRequest(response, error);
                     }
