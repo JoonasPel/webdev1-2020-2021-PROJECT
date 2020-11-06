@@ -110,8 +110,11 @@ const handleRequest = async(request, response) => {
                     const role = (await parseBodyJson(request)).role;
                     let updatedUser;
                     try {
-                        //update role, returns copy of user or throws if role is unknown.
-                        updatedUser = await User.updateOne({ _id: targetUserID }, { role: role }, { runValidators: true});
+                        //update role or throw if role is unknown. (runValidators valids role)
+                        await User.updateOne({ _id: targetUserID }, { role: role }, { runValidators: true});
+                        //return updated user (with updated role)
+                        updatedUser = await User.findOne({_id: targetUserID});
+                
                     } catch (error) {
                         return responseUtils.badRequest(response, error);
                     }
