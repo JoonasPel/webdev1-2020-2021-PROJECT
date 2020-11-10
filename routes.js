@@ -213,6 +213,11 @@ const handleRequest = async(request, response) => {
             try {
                 await User.create(parsedBody);
             } catch (error) {
+
+                // //loop to print error causing items to console
+                // for (error in error.errors) {
+                //     console.log(error)
+                // }
                 //catch all errors and return
                 return responseUtils.badRequest(response, 'Bad Request');
             }
