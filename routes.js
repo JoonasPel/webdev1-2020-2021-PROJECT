@@ -2,7 +2,9 @@ const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { getCurrentUser } = require('./auth/auth');
-const { getAllProducts, getProductById } = require('./utils/products');
+const { getProductById } = require('./utils/products');
+const { getAllProducts } = require('./controllers/products');
+const { getAllUsers, viewUser, deleteUser, updateUser, registerUser } = require('./controllers/users')
 const User = require('./models/user');
 
 /**
@@ -89,22 +91,16 @@ const handleRequest = async(request, response) => {
         const targetUserID = url.substring(11);
         const targetUser = await User.findOne({ _id: targetUserID });
 
-        if (currentUser === null || currentUser === undefined) {
-            return responseUtils.basicAuthChallenge(response);
-        } else if (currentUser.role !== 'admin') {
-            return responseUtils.forbidden(response);
-        } else if (targetUser === null || targetUser === undefined) {
-            return responseUtils.notFound(response);
-        }
+        authenticateAdminUser(currentUser, response);
 
         switch (method.toUpperCase()) {
             case 'GET':
                 {
-                    //responses with user object found by id 
-                    return responseUtils.sendJson(response, targetUser);
+                    return viewUser(response, targetUserID, currentUser);
                 }
             case 'PUT':
                 {
+
                     //parse request body and get role.
                     const role = (await parseBodyJson(request)).role;
                     let updatedUser;
@@ -122,9 +118,7 @@ const handleRequest = async(request, response) => {
                 }
             case 'DELETE':
                 {
-                    //deletes user then responses with deleted user (object)
-                    await User.findOneAndDelete({ _id: targetUserID });
-                    return responseUtils.sendJson(response, targetUser);
+                    return deleteUser(response, targetUserID, currentUser);
                 }
             default:
                 throw new Error('Invalid method');
@@ -173,26 +167,16 @@ const handleRequest = async(request, response) => {
         if (currentUser === null || currentUser === undefined) {
             return responseUtils.basicAuthChallenge(response);
         } else {
-            return responseUtils.sendJson(response, getAllProducts());
+            return getAllProducts(response);
         }
     }
     // GET all users
     if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
-        // TODO: 8.3 Return all users as JSON
-        // TODO: 8.4 Add authentication (only allowed to users with role "admin")
-
         //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
+        authenticateAdminUser(currentUser, response);
+        return getAllUsers(response);
 
-        if (currentUser === null || currentUser === undefined) {
-            return responseUtils.basicAuthChallenge(response);
-        } else if (currentUser.role !== 'admin') {
-            return responseUtils.forbidden(response);
-        } else {
-            //array of all users
-            let allUsers = await User.find();
-            return responseUtils.sendJson(response, allUsers);
-        }
     }
 
     // register new user
@@ -201,36 +185,20 @@ const handleRequest = async(request, response) => {
         if (!isJson(request)) {
             return responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
         }
-        // TODO: 8.3 Implement registration
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-        const parsedBody = await parseBodyJson(request);
-
-        //Test if email already in use
-        if (await User.exists({ email: parsedBody.email })) {
-            return responseUtils.badRequest(response, 'Bad Request');
-        } else {
-            //try save new user
-            try {
-                await User.create(parsedBody);
-            } catch (error) {
-
-                // //loop to print error causing items to console
-                // for (error in error.errors) {
-                //     console.log(error)
-                // }
-                //catch all errors and return
-                return responseUtils.badRequest(response, 'Bad Request');
-            }
-            //update role to customer
-            await User.updateOne({ email: parsedBody.email }, { role: 'customer' });
-            //get new user and return it as response
-            let newUser = await User.findOne({ email: parsedBody.email });
-            // console.log(newUser)
-
-            return responseUtils.createdResource(response, newUser);
-
-        }
+        const userData = await parseBodyJson(request);
+        return registerUser(response, userData);
     }
 };
+async function authenticateAdminUser(user, response) {
+    if (user === null || user === undefined) {
+        return responseUtils.basicAuthChallenge(response);
+    } else if (user.role !== 'admin') {
+        return responseUtils.forbidden(response);
+    } else {
+        return
+    }
+
+}
 
 module.exports = { handleRequest };
