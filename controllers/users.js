@@ -43,8 +43,31 @@ const deleteUser = async(response, userId, currentUser) => {
  * @param {Object} userData JSON data from request body
  */
 const updateUser = async(response, userId, currentUser, userData) => {
-    // TODO: 10.1 Implement this
-    throw new Error('Not Implemented');
+    //current user is not allowed update its own data
+    if(currentUser._id == userId) {
+        return responseUtils.badRequest(response, 'Updating own data is not allowed');
+    } 
+
+    //checks if userId doesnt exist.
+    if (await User.exists({_id: userId}) === false) {
+        return responseUtils.notFound(response);
+    }
+
+      //get role from userData
+      const role = userData.role;
+      let updatedUser;
+      try {
+          //update role or throw if role is unknown. (runValidators valids role)
+          await User.updateOne({ _id: userId }, { role: role }, { runValidators: true });
+          //return updated user (with updated role)
+          updatedUser = await User.findOne({ _id: userId });
+
+      } catch (error) {
+          return responseUtils.badRequest(response, error);
+      }
+      //update success (didn't throw)
+      return responseUtils.sendJson(response, updatedUser);
+  
 };
 
 /**

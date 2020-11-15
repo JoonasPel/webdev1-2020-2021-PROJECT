@@ -89,9 +89,12 @@ const handleRequest = async(request, response) => {
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
         const currentUser = await getCurrentUser(request);
         const targetUserID = url.substring(11);
-        const targetUser = await User.findOne({ _id: targetUserID });
 
-        authenticateAdminUser(currentUser, response);
+        if (currentUser === null || currentUser === undefined) {
+            return responseUtils.basicAuthChallenge(response);
+        } else if (currentUser.role !== 'admin') {
+            return responseUtils.forbidden(response);
+        }
 
         switch (method.toUpperCase()) {
             case 'GET':
@@ -100,21 +103,8 @@ const handleRequest = async(request, response) => {
                 }
             case 'PUT':
                 {
-
-                    //parse request body and get role.
-                    const role = (await parseBodyJson(request)).role;
-                    let updatedUser;
-                    try {
-                        //update role or throw if role is unknown. (runValidators valids role)
-                        await User.updateOne({ _id: targetUserID }, { role: role }, { runValidators: true });
-                        //return updated user (with updated role)
-                        updatedUser = await User.findOne({ _id: targetUserID });
-
-                    } catch (error) {
-                        return responseUtils.badRequest(response, error);
-                    }
-                    //update success (didn't throw)
-                    return responseUtils.sendJson(response, updatedUser);
+                    const userData = await parseBodyJson(request);
+                    return updateUser(response, targetUserID, currentUser, userData);
                 }
             case 'DELETE':
                 {
@@ -174,9 +164,16 @@ const handleRequest = async(request, response) => {
     if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
         //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
-        authenticateAdminUser(currentUser, response);
-        return getAllUsers(response);
 
+        if (currentUser === null || currentUser === undefined) {
+            return responseUtils.basicAuthChallenge(response);
+        } else if (currentUser.role !== 'admin') {
+            return responseUtils.forbidden(response);
+        } else {
+            return getAllUsers(response);
+        
+        }
+        
     }
 
     // register new user
