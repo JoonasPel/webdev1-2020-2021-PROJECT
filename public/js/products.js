@@ -8,10 +8,7 @@ const template = document.getElementById('product-template');
  * Get products from API
  */
 getJSON("/api/products").then(data => {
-
-    for (const product of data) {
-        listProductHTML(product);
-    }
+    data.forEach(listProductHTML);
 });
 
 /**

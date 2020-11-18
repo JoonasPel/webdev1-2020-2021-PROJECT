@@ -9,9 +9,7 @@ const template = document.getElementById('cart-item-template');
  */
 const getAllProductsFromCart = () => {
     const keys = Object.keys(sessionStorage);
-    for (const key of keys) {
-        generateProductIntoCart(key, sessionStorage.getItem(key));
-    }
+    keys.forEach(key => generateProductIntoCart(key, sessionStorage.getItem(key)));
 };
 
 

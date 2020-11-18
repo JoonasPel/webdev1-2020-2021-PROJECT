@@ -18,9 +18,7 @@
 const template = document.getElementById('user-template');
 
 getJSON("/api/users").then(data => {
-    for (const user of data) {
-        listUserHTML(user);
-    }
+    data.forEach(listUserHTML);
 });
 
 const listUserHTML = (user) => {
