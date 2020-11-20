@@ -120,14 +120,13 @@ const handleRequest = async(request, response) => {
         const targetProduct = getProductById(targetProductId);
         //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
-        // check user status
-        if (currentUser === null || currentUser === undefined) {
-            return responseUtils.basicAuthChallenge(targetProduct);
-
-        } else {
-
-            return responseUtils.sendJson(response, targetProduct);
-        }
+        //authenticate user (NOT for admins only)
+        authenticateUser(currentUser, response, false);
+        //if authentication failed, response.end() was called in responseUtils.js
+        if(response.writableFinished === true) return;
+        //authentication successful, return targetProduct
+        return responseUtils.sendJson(response, targetProduct);
+        
     }
 
 
