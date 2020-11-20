@@ -88,11 +88,10 @@ const handleRequest = async(request, response) => {
         const currentUser = await getCurrentUser(request);
         const targetUserID = url.substring(11);
 
-        if (currentUser === null || currentUser === undefined) {
-            return responseUtils.basicAuthChallenge(response);
-        } else if (currentUser.role !== 'admin') {
-            return responseUtils.forbidden(response);
-        }
+        //authenticate user (admin only)
+        authenticateUser(currentUser, response, true);
+        //if authentication failed, response.end() was called in responseUtils.js
+        if(response.writableFinished === true) return;
 
         switch (method.toUpperCase()) {
             case 'GET':
@@ -150,27 +149,25 @@ const handleRequest = async(request, response) => {
     // GET All products 
     if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
         //current user object, null if Authorization not correct
-        const currentUser = await getCurrentUser(request);
-        // check user status
-        if (currentUser === null || currentUser === undefined) {
-            return responseUtils.basicAuthChallenge(response);
-        } else {
-            return getAllProducts(response);
-        }
+        const currentUser = await getCurrentUser(request);    
+        //authenticate user (NOT for admins only)
+        authenticateUser(currentUser, response, false);
+        //if authentication failed, response.end() was called in responseUtils.js
+        if(response.writableFinished === true) return;
+        //authentication successful, return products
+        return getAllProducts(response);
+        
     }
     // GET all users
     if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
         //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
-
-        if (currentUser === null || currentUser === undefined) {
-            return responseUtils.basicAuthChallenge(response);
-        } else if (currentUser.role !== 'admin') {
-            return responseUtils.forbidden(response);
-        } else {
-            return getAllUsers(response);
-        
-        }
+        //authenticate user (admin only)
+        authenticateUser(currentUser, response, true);
+        //if authentication failed, response.end() was called in responseUtils.js
+        if(response.writableFinished === true) return;
+        //authentication successful, return users
+        return getAllUsers(response);
         
     }
 
@@ -185,15 +182,26 @@ const handleRequest = async(request, response) => {
         return registerUser(response, userData);
     }
 };
-async function authenticateAdminUser(user, response) {
+
+/**
+ * 
+ * @param {Object|null} user 
+ * @param {http.ServerResponse} response 
+ * @param {Boolean} adminOnly 
+ */
+async function authenticateUser(user, response, adminOnly = false) {
+    //checks if user doesn't exist
     if (user === null || user === undefined) {
         return responseUtils.basicAuthChallenge(response);
-    } else if (user.role !== 'admin') {
-        return responseUtils.forbidden(response);
-    } else {
-        return
     }
 
+    //if only admin credentials allowed, check it
+    if(adminOnly === true && user.role !== 'admin') {
+        return responseUtils.forbidden(response);   
+    }
+
+    //authenticating successful
+    return;
 }
 
 module.exports = { handleRequest };
