@@ -12,4 +12,19 @@ const getAllProducts = async response => {
     return responseUtils.sendJson(response, productsData.products);
 };
 
-module.exports = { getAllProducts };
+/**
+ * Get product by id
+ * @param {Product id to search} productId 
+ * @returns JSON of item or undefined
+ */
+const getProductById = (productId) => {
+    const product = productsData.products.find(product => product._id === productId);
+    if (typeof product === "undefined") { return undefined; }
+    //product found, JSON needed to make a deep copy.
+    return JSON.parse(JSON.stringify(product));
+};
+
+module.exports = {
+    getAllProducts,
+    getProductById
+};

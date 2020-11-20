@@ -2,10 +2,8 @@ const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { getCurrentUser } = require('./auth/auth');
-const { getProductById } = require('./utils/products');
-const { getAllProducts } = require('./controllers/products');
+const { getAllProducts, getProductById } = require('./controllers/products');
 const { getAllUsers, viewUser, deleteUser, updateUser, registerUser } = require('./controllers/users')
-const User = require('./models/user');
 
 /**
  * Known API routes and their allowed methods
