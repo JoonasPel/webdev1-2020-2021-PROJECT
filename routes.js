@@ -189,7 +189,7 @@ const handleRequest = async(request, response) => {
  * @param {http.ServerResponse} response 
  * @param {Boolean} adminOnly 
  */
-async function authenticateUser(user, response, adminOnly = false) {
+function authenticateUser(user, response, adminOnly = false) {
     //checks if user doesn't exist
     if (user === null || user === undefined) {
         return responseUtils.basicAuthChallenge(response);
