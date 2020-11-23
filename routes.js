@@ -117,7 +117,6 @@ const handleRequest = async(request, response) => {
      */
     if (matchProductId(filePath)) {
         const targetProductId = url.substring(14);
-        const targetProduct = getProductById(targetProductId);
         //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
         //authenticate user (NOT for admins only)
@@ -125,8 +124,7 @@ const handleRequest = async(request, response) => {
         //if authentication failed, response.end() was called in responseUtils.js
         if(response.writableFinished === true) return;
         //authentication successful, return targetProduct
-        return responseUtils.sendJson(response, targetProduct);
-        
+        return getProductById(response, targetProductId);       
     }
 
 

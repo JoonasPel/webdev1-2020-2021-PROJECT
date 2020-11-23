@@ -1,5 +1,4 @@
-// make copies of products (prevents changing from outside this module/file)
-const productsData = { products: require('../products.json').map(product => ({...product })) };
+const Product = require("../models/product");
 const responseUtils = require('../utils/responseUtils');
 /**
  * Send all products as JSON
@@ -8,20 +7,23 @@ const responseUtils = require('../utils/responseUtils');
  */
 const getAllProducts = async response => {
     // TODO: 10.1 Implement this
-
-    return responseUtils.sendJson(response, productsData.products);
+    let allProducts = await Product.find();
+    return responseUtils.sendJson(response, allProducts);
 };
 
 /**
- * Get product by id
- * @param {Product id to search} productId 
- * @returns JSON of item or undefined
+ * Send product data as JSON
+ * 
+ * @param {http.ServerResponse} response 
+ * @param {string} productId 
  */
-const getProductById = (productId) => {
-    const product = productsData.products.find(product => product._id === productId);
-    if (typeof product === "undefined") { return undefined; }
-    //product found, JSON needed to make a deep copy.
-    return JSON.parse(JSON.stringify(product));
+const getProductById = async(response, productId) => {
+    const product = await Product.findOne({ _id: productId });
+    if (product !== null) {
+        return responseUtils.sendJson(response, product);
+    } else {
+        return responseUtils.notFound(response);
+    }
 };
 
 module.exports = {
