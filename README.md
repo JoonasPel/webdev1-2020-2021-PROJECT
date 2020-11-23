@@ -48,7 +48,8 @@ TODO: describe added files here and give them short descriptions
 
 TODO: describe the system, important buzzwords include MVC and REST.
 UML diagrams would be highly appreciated.
-![UML Image of site structure](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/tree/master/docs/webdev1_uml.png?raw=true)
+
+![UML Image of site structure](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/tree/master/docs/webdev1_uml.png)
 
 ### Pages and navigation
 TODO:
