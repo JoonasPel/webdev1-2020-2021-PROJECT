@@ -49,6 +49,11 @@ TODO: describe added files here and give them short descriptions
 TODO: describe the system, important buzzwords include MVC and REST.
 UML diagrams would be highly appreciated.
 
+### Pages and navigation
+TODO:
+
+### Data models
+TODO:
 
 ## Tests and documentation
 
