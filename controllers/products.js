@@ -25,6 +25,7 @@ const getProductById = async(response, productId) => {
         return responseUtils.notFound(response);
     }
 };
+
 const updateProductById = async(response, productId, productData) => {
 
     //checks if productId doesn't exist.
@@ -32,23 +33,15 @@ const updateProductById = async(response, productId, productData) => {
         return responseUtils.notFound(response);
     }
 
-    //get information from productData
-    const price = productData.price;
-    const name = productData.name;
-    const description = productData.description;
-    let updatedProduct;
     try {
         //update information of product or throw error
-        await Product.updateOne({ _id: productId }, { price: price }, { name: name }, { description: description });
-        //return updated user (with updated role)
-        updatedProduct = await Product.findOne({ _id: productId });
-
+        await Product.updateOne({ _id: productId }, productData, { runValidators: true });
+        //return updated product
+        let updatedProduct = await Product.findOne({ _id: productId });
+        return responseUtils.sendJson(response, updatedProduct);
     } catch (error) {
         return responseUtils.badRequest(response, error);
     }
-    //update success (didn't throw)
-    return responseUtils.sendJson(response, updatedProduct);
-
 };
 
 const deleteProductById = async(response, productId) => {
