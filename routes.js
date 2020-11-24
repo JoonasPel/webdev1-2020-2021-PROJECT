@@ -2,7 +2,7 @@ const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { getCurrentUser } = require('./auth/auth');
-const { getAllProducts, getProductById } = require('./controllers/products');
+const { getAllProducts, getProductById, updateProductById, deleteProductById } = require('./controllers/products');
 const { getAllUsers, viewUser, deleteUser, updateUser, registerUser } = require('./controllers/users')
 
 /**
@@ -73,7 +73,6 @@ const matchProductId = url => {
 const handleRequest = async(request, response) => {
     const { url, method, headers } = request;
     const filePath = new URL(url, `http://${headers.host}`).pathname;
-
     // serve static files from public/ and return immediately
     if (method.toUpperCase() === 'GET' && !filePath.startsWith('/api')) {
         const fileName = filePath === '/' || filePath === '' ? 'index.html' : filePath;
@@ -91,7 +90,7 @@ const handleRequest = async(request, response) => {
         //authenticate user (admin only)
         authenticateUser(currentUser, response, true);
         //if authentication failed, response.end() was called in responseUtils.js
-        if(response.writableFinished === true) return;
+        if (response.writableFinished === true) return;
 
         switch (method.toUpperCase()) {
             case 'GET':
@@ -113,19 +112,36 @@ const handleRequest = async(request, response) => {
     }
 
     /**
-     * Get one product from /api/products({product_id}) as JSON
+     *Test if one product is looked or manipulated throught
      */
     if (matchProductId(filePath)) {
         const targetProductId = url.substring(14);
         //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
-        //authenticate user (NOT for admins only)
-        authenticateUser(currentUser, response, false);
+        //authenticate user (admins only)
+        authenticateUser(currentUser, response, true);
         //if authentication failed, response.end() was called in responseUtils.js
-        if(response.writableFinished === true) return;
+        if (response.writableFinished === true) return;
         //authentication successful, return targetProduct
-        return getProductById(response, targetProductId);       
+        switch (method.toUpperCase()) {
+            case 'GET':
+                {
+                    return getProductById(response, targetProductId);
+                }
+            case 'PUT':
+                {
+                    const productData = await parseBodyJson(request);
+                    return updateProductById(response, targetProductId, productData);
+                }
+            case 'DELETE':
+                {
+                    return deleteProductById(response, targetProductId);
+                }
+            default:
+                throw new Error('Invalid method');
+        }
     }
+
 
 
     // Default to 404 Not Found if unknown url
@@ -139,21 +155,21 @@ const handleRequest = async(request, response) => {
         return responseUtils.methodNotAllowed(response);
     }
 
-    // Require a correct accept header (require 'application/json' or '*/*')
+    // Require a correct accept header (require 'application/json' or '*/*') otherwise 406
     if (!acceptsJson(request)) {
         return responseUtils.contentTypeNotAcceptable(response);
     }
     // GET All products 
     if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
         //current user object, null if Authorization not correct
-        const currentUser = await getCurrentUser(request);    
+        const currentUser = await getCurrentUser(request);
         //authenticate user (NOT for admins only)
         authenticateUser(currentUser, response, false);
         //if authentication failed, response.end() was called in responseUtils.js
-        if(response.writableFinished === true) return;
+        if (response.writableFinished === true) return;
         //authentication successful, return products
         return getAllProducts(response);
-        
+
     }
     // GET all users
     if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
@@ -162,10 +178,10 @@ const handleRequest = async(request, response) => {
         //authenticate user (admin only)
         authenticateUser(currentUser, response, true);
         //if authentication failed, response.end() was called in responseUtils.js
-        if(response.writableFinished === true) return;
+        if (response.writableFinished === true) return;
         //authentication successful, return users
         return getAllUsers(response);
-        
+
     }
 
     // register new user
@@ -193,8 +209,8 @@ function authenticateUser(user, response, adminOnly = false) {
     }
 
     //if only admin credentials allowed, check it
-    if(adminOnly === true && user.role !== 'admin') {
-        return responseUtils.forbidden(response);   
+    if (adminOnly === true && user.role !== 'admin') {
+        return responseUtils.forbidden(response);
     }
 
     //authenticating successful
