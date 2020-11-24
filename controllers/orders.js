@@ -27,7 +27,6 @@ const getAllOrders = async(response, userId = ' ', admin = false) => {
  */
 const getOrderById = async(response, orderId, userId = ' ', admin) => {
     //checks if orderId doesn't exist.
-    console.log(userId)
     if (await Order.exists({ _id: orderId }) === false) {
         return responseUtils.notFound(response);
     }
