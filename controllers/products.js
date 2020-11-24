@@ -54,9 +54,26 @@ const deleteProductById = async(response, productId) => {
     }
 };
 
+const addNewProduct = async(response, productData) => {
+
+    //try save new product
+    try {
+        await Product.create(productData);
+    } catch (error) {
+        return responseUtils.badRequest(response, 'Bad Request');
+    }
+
+    let newProduct = await Product.findOne({ description: productData.description });
+    // console.log(newUser)
+
+    return responseUtils.createdResource(response, newProduct);
+
+};
+
 module.exports = {
     getAllProducts,
     getProductById,
     updateProductById,
-    deleteProductById
+    deleteProductById,
+    addNewProduct
 };

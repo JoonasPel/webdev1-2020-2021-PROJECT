@@ -2,8 +2,10 @@ const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { getCurrentUser } = require('./auth/auth');
-const { getAllProducts, getProductById, updateProductById, deleteProductById } = require('./controllers/products');
-const { getAllUsers, viewUser, deleteUser, updateUser, registerUser } = require('./controllers/users')
+const { getAllProducts, getProductById, updateProductById, deleteProductById, addNewProduct } = require('./controllers/products');
+const { getAllUsers, viewUser, deleteUser, updateUser, registerUser } = require('./controllers/users');
+const { getAllOrders, getOrderById, addNewOrder } = require('./controllers/orders');
+
 
 /**
  * Known API routes and their allowed methods
@@ -14,7 +16,8 @@ const { getAllUsers, viewUser, deleteUser, updateUser, registerUser } = require(
 const allowedMethods = {
     '/api/register': ['POST'],
     '/api/users': ['GET'],
-    '/api/products': ['GET']
+    '/api/products': ['GET', 'POST', 'PUT', 'DELETE'],
+    '/api/orders': ['GET', 'POST']
 };
 
 /**
@@ -68,6 +71,16 @@ const matchUserId = url => {
  */
 const matchProductId = url => {
     return matchIdRoute(url, 'products');
+};
+
+/**
+ * Does the URL match /api/orders/{id}
+ *
+ * @param {string} url filePath
+ * @returns {boolean}
+ */
+const matchOrderId = url => {
+    return matchIdRoute(url, 'orders');
 };
 
 const handleRequest = async(request, response) => {
@@ -135,7 +148,7 @@ const handleRequest = async(request, response) => {
                 }
             case 'PUT':
                 {
-                    if(currentUser.role !== 'admin') {
+                    if (currentUser.role !== 'admin') {
                         return responseUtils.forbidden(response);
                     }
                     const productData = await parseBodyJson(request);
@@ -143,7 +156,7 @@ const handleRequest = async(request, response) => {
                 }
             case 'DELETE':
                 {
-                    if(currentUser.role !== 'admin') {
+                    if (currentUser.role !== 'admin') {
                         return responseUtils.forbidden(response);
                     }
                     return deleteProductById(response, targetProductId);
@@ -153,7 +166,45 @@ const handleRequest = async(request, response) => {
         }
     }
 
+    /*
+     * Orders
+     */
 
+
+    /**
+     *Test if one order is looked 
+     */
+    if (matchOrderId(filePath)) {
+        const targetOrderId = url.substring(12);
+        //current user object, null if Authorization not correct
+        const currentUser = await getCurrentUser(request);
+        //authenticate user (NOT for admins only)
+        authenticateUser(currentUser, response);
+        //if authentication failed, response.end() was called in responseUtils.js
+        if (response.writableFinished === true) return;
+        // Require a correct accept header (require 'application/json' or '*/*') otherwise 406
+        if (!acceptsJson(request)) {
+            return responseUtils.contentTypeNotAcceptable(response);
+        }
+
+        switch (method.toUpperCase()) {
+            case 'GET':
+                {
+                    if (currentUser.role !== 'admin') {
+                        return getOrderById(response, targetOrderId, currentUser._id, false);
+                    }
+                    return getOrderById(response, targetOrderId, currentUser._id, true);
+
+                }
+            case 'POST':
+                {
+                    const orderData = await parseBodyJson(request);
+                    return addNewOrder(response, orderData);
+                }
+            default:
+                throw new Error('Invalid method');
+        }
+    }
 
     // Default to 404 Not Found if unknown url
     if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
@@ -169,6 +220,21 @@ const handleRequest = async(request, response) => {
     // Require a correct accept header (require 'application/json' or '*/*') otherwise 406
     if (!acceptsJson(request)) {
         return responseUtils.contentTypeNotAcceptable(response);
+    }
+    // GET All orders 
+    if (filePath === '/api/orders' && method.toUpperCase() === 'GET') {
+        //current user object, null if Authorization not correct
+        const currentUser = await getCurrentUser(request);
+        //authenticate user (NOT for admins only)
+        authenticateUser(currentUser, response, false);
+        //if authentication failed, response.end() was called in responseUtils.js
+        if (response.writableFinished === true) return;
+        //authentication successful, return products based on user role
+        if (currentUser.role !== 'admin') {
+            return getAllOrders(response, currentUser._id, false);
+        }
+        return getAllOrders(response, '', true);
+
     }
     // GET All products 
     if (filePath === '/api/products' && method.toUpperCase() === 'GET') {
@@ -204,6 +270,43 @@ const handleRequest = async(request, response) => {
         // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
         const userData = await parseBodyJson(request);
         return registerUser(response, userData);
+    }
+
+    // add new product
+    if (filePath === '/api/products' && method.toUpperCase() === 'POST') {
+        //current user object, null if Authorization not correct
+        const currentUser = await getCurrentUser(request);
+        //authenticate user (admins allowed only)
+        authenticateUser(currentUser, response, true);
+        //if authentication failed, response.end() was called in responseUtils.js
+        if (response.writableFinished === true) return;
+        // Fail if not a JSON request
+        if (!isJson(request)) {
+            return responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
+        }
+        // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
+        const productData = await parseBodyJson(request);
+        return addNewProduct(response, productData);
+    }
+
+    // add new order
+    if (filePath === '/api/orders' && method.toUpperCase() === 'POST') {
+        //current user object, null if Authorization not correct
+        const currentUser = await getCurrentUser(request);
+        //authenticate user (customers allowed only)
+        authenticateUser(currentUser, response, false);
+        //if authentication failed, response.end() was called in responseUtils.js
+        if (response.writableFinished === true) return;
+        // Fail if not a JSON request
+        if (!isJson(request)) {
+            return responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
+        }
+        // forbidden for admins
+        if (currentUser.role === 'admin') {
+            return responseUtils.forbidden(response);
+        }
+        const orderData = await parseBodyJson(request);
+        return addNewOrder(response, orderData);
     }
 };
 
