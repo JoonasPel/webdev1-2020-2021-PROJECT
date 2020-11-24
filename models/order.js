@@ -6,26 +6,24 @@ const orderedItemSchema = new Schema({
     product: {
         _id: {
             type: String,
-            required: true           
+            required: true       
         },
         name: {
             type: String,
             required: true
         },
-        price : {
+        price: {
             type: Number,
             min: 0,
             required: true
         },
         description: {
             type: String
-        },
-        required: true
+        }
     },
     quantity: {
         type: Number,
-        min: 1,
-        required: true
+        min: 1
     }
 });
 
@@ -39,7 +37,7 @@ const orderSchema = new Schema({
 });
 
 // Omit the version key when serialized to JSON
-OrderSchema.set('toJSON', { virtuals: false, versionKey: false });
+orderSchema.set('toJSON', { virtuals: false, versionKey: false });
 
 const Order = new mongoose.model('Order', orderSchema);
 module.exports = Order;
