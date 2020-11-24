@@ -82,15 +82,16 @@ const handleRequest = async(request, response) => {
      * Test if one user is looked or manipulated throught 
      */
     if (matchUserId(filePath)) {
-        // TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
-        // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
         const currentUser = await getCurrentUser(request);
         const targetUserID = url.substring(11);
-
-        //authenticate user (admin only)
+        //authenticate user (admins allowed only)
         authenticateUser(currentUser, response, true);
         //if authentication failed, response.end() was called in responseUtils.js
         if (response.writableFinished === true) return;
+        // Require a correct accept header (require 'application/json' or '*/*') otherwise 406
+        if (!acceptsJson(request)) {
+            return responseUtils.contentTypeNotAcceptable(response);
+        }
 
         switch (method.toUpperCase()) {
             case 'GET':
@@ -118,11 +119,15 @@ const handleRequest = async(request, response) => {
         const targetProductId = url.substring(14);
         //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
-        //authenticate user (admins only)
-        authenticateUser(currentUser, response, true);
+        //authenticate user (NOT for admins only)
+        authenticateUser(currentUser, response);
         //if authentication failed, response.end() was called in responseUtils.js
         if (response.writableFinished === true) return;
-        //authentication successful, return targetProduct
+        // Require a correct accept header (require 'application/json' or '*/*') otherwise 406
+        if (!acceptsJson(request)) {
+            return responseUtils.contentTypeNotAcceptable(response);
+        }
+
         switch (method.toUpperCase()) {
             case 'GET':
                 {
@@ -130,11 +135,17 @@ const handleRequest = async(request, response) => {
                 }
             case 'PUT':
                 {
+                    if(currentUser.role !== 'admin') {
+                        return responseUtils.forbidden(response);
+                    }
                     const productData = await parseBodyJson(request);
                     return updateProductById(response, targetProductId, productData);
                 }
             case 'DELETE':
                 {
+                    if(currentUser.role !== 'admin') {
+                        return responseUtils.forbidden(response);
+                    }
                     return deleteProductById(response, targetProductId);
                 }
             default:
@@ -175,7 +186,7 @@ const handleRequest = async(request, response) => {
     if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
         //current user object, null if Authorization not correct
         const currentUser = await getCurrentUser(request);
-        //authenticate user (admin only)
+        //authenticate user (admins allowed only)
         authenticateUser(currentUser, response, true);
         //if authentication failed, response.end() was called in responseUtils.js
         if (response.writableFinished === true) return;
