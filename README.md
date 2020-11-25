@@ -49,10 +49,11 @@ A web shop with vanilla HTML, CSS.
 │   ├── controllers         --> controllers testing
 └── └── own                 --> own issues tester
 
+```
 
 ## The architecture 
 
-![UML Image of site structure](docs/webdev1_uml.png "Webshop UML")
+![UML Image of site structure](docs/webdev1uml.png "Webshop UML")
 
 ### Pages and navigation
 Customer user needs to have "Profile" or similar page to view own orders and change his/her user information.
