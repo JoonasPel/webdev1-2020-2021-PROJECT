@@ -43,7 +43,7 @@ const deleteUser = async(response, userId, currentUser) => {
  */
 const updateUser = async(response, userId, currentUser, userData) => {
     //current user is not allowed update its own data
-    if (currentUser._id === userId) {
+    if (String(currentUser._id) === userId) {
         return responseUtils.badRequest(response, 'Updating own data is not allowed');
     }
 

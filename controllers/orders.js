@@ -9,10 +9,10 @@ const responseUtils = require('../utils/responseUtils');
  */
 const getAllOrders = async(response, userId = ' ', admin = false) => {
     if (admin) {
-        let allOrders = await Order.find();
+        const allOrders = await Order.find();
         return responseUtils.sendJson(response, allOrders);
     } else {
-        let userOrders = await Order.find({ customerId: userId })
+        const userOrders = await Order.find({ customerId: userId });
         return responseUtils.sendJson(response, userOrders);
     }
 };
@@ -29,7 +29,7 @@ const getOrderById = async(response, orderId, userId = ' ', admin) => {
         return responseUtils.notFound(response);
     }
     const order = await Order.findOne({ _id: orderId });
-    if (admin || order.customerId == userId) {
+    if (admin || order.customerId === String(userId)) {
         return responseUtils.sendJson(response, order);
     } else {
         return responseUtils.notFound(response);
@@ -40,7 +40,7 @@ const getOrderById = async(response, orderId, userId = ' ', admin) => {
 const addNewOrder = async(response, orderData, userId) => {
     //try save new order, throw if validation fails
     try {
-        const newOrder = { customerId: String(userId), items: orderData.items }
+        const newOrder = { customerId: String(userId), items: orderData.items };
         const createdOrder = await Order.create(newOrder);
         return responseUtils.createdResource(response, createdOrder);
     } catch (error) {
