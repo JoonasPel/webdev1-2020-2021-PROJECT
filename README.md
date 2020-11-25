@@ -1,10 +1,10 @@
 # Group 
 
-Member1:  name, email, student ID, 
-resposible for: TODO, short description of duties 
+Member1:  Joona Pelttari, joonas.pelttari@tuni.fi, 274830
+resposible for: Lead developer, complex coding tasks
 
-Member2:  name, email, student ID, 
-resposible for: TODO, short description of duties 
+Member2: Tatu-Pekka Heikkilä, tatu-pekka.heikkila@tuni.fi, 439530
+resposible for: Assisting developer
 
 
 
@@ -17,45 +17,55 @@ A web shop with vanilla HTML, CSS.
 
 ```
 .
-├── index.js                --> TODO
-├── package.json            --> TODO
-├── routes.js               --> TODO
-├── auth                    --> TODO
-│   └──  auth.js            --> TODO
-├── controllers             --> TODO
-│   ├──  ...                -->   ...
+├── index.js                --> startup functions to webshop
+├── package.json            --> project dependecies and metadata
+├── routes.js               --> responsible for routing requests
+├── auth                     
+│   └──  auth.js            --> user authentication services and funcions
+├── controllers              
 │   └── users.js            --> controller for user
-├── models                  --> 
-│                               TODO
-├── public                  --> 
-│   ├── img                 --> 
-│   ├── js                  --> 
-│   └── css                 --> 
-├── utils                   --> TODO
-│   ├──                     --> TODO
-│   └──                     --> TODO
+│   └── orders.js           --> controller for order
+│   └── products.js         --> controller for product
+├── models                   
+│   └── db.js               --> MongoDB connection functions
+│   └── order.js            --> MongoDB model for order documents
+│   └── product.js          --> MongoDB model for product documents
+│   └── user.js             --> MongoDB model for user documents
+├── public                  --> all materials that client can achieve 
+│   ├── img                 --> images
+│   ├── js                  --> different page functions
+│   │    ├── adminUsers.js  --> functions for admin in users-page
+│   │    ├── cart.js        --> cart functions
+│   │    ├── products.js    --> product page functions
+│   │    ├── register.js    --> register user function
+│   │    └── utils.js       --> utility functions for all pages
+│   └── css                 --> stylsheet
+├── utils                   
+│   ├── render.js           --> rendering functions
+│   ├── requestUtils.js     --> request handler functions
+│   └── reponseUtils.js     --> response handler functions
 └── test                    --> tests
-│   ├── auth                --> TODO
-│   ├── controllers         --> TODO
-└── └── own                 --> TODO
+│   ├── auth                --> authentication testers
+│   ├── controllers         --> controllers testing
+└── └── own                 --> own issues tester
 
-
-```
-
-TODO: describe added files here and give them short descriptions
 
 ## The architecture 
 
-TODO: describe the system, important buzzwords include MVC and REST.
-UML diagrams would be highly appreciated.
-
-![UML Image of site structure](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/blob/master/docs/webdev1_uml.png?raw=true)
+![UML Image of site structure](docs/webdev1_uml.png "Webshop UML")
 
 ### Pages and navigation
-TODO:
+Customer user needs to have "Profile" or similar page to view own orders and change his/her user information.
+
+Admin user needs to have "Admin functionalities" or similar page to:
+- view all orders and possibility to drill down into one order
+- view all users and possibility to drill down into one user and modify it
+- view all products and possibility to drill down into one product and modify it
+- add new user with admin rights
+- add new product 
 
 ### Data models
-TODO:
+There are differen MongoDB models for database, order, product and user.
 
 ## Tests and documentation
 
