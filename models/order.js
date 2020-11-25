@@ -23,7 +23,8 @@ const orderedItemSchema = new Schema({
     },
     quantity: {
         type: Number,
-        min: 1
+        min: 1,
+        required: true
     }
 });
 
@@ -33,7 +34,11 @@ const orderSchema = new Schema({
         type: String,
         required: true,
     },
-    items: [orderedItemSchema]
+    items: {
+        type: [orderedItemSchema],
+        required: true,
+        validate: [value => value.length > 0]
+    }
 });
 
 // Omit the version key when serialized to JSON

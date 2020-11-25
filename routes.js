@@ -306,7 +306,7 @@ const handleRequest = async(request, response) => {
             return responseUtils.forbidden(response);
         }
         const orderData = await parseBodyJson(request);
-        return addNewOrder(response, orderData);
+        return addNewOrder(response, orderData, currentUser._id);
     }
 };
 
