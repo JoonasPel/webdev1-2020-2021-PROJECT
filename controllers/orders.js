@@ -3,7 +3,7 @@ const responseUtils = require('../utils/responseUtils');
 /**
  * Send all orders as JSON
  *
- * @param {http.ServerResponse} response
+ * @param {http.ServerResponse} response Http response
  * @param {userId} UserId of requesting user
  * @param {admin} false if not admin
  */
@@ -20,8 +20,8 @@ const getAllOrders = async(response, userId = ' ', admin = false) => {
 /**
  * Send order data as JSON
  * 
- * @param {http.ServerResponse} response 
- * @param {string} orderId 
+ * @param {http.ServerResponse} response Http response
+ * @param {string} orderId Order id 
  */
 const getOrderById = async(response, orderId, userId = ' ', admin) => {
     //checks if orderId doesn't exist.
@@ -40,7 +40,7 @@ const getOrderById = async(response, orderId, userId = ' ', admin) => {
 const addNewOrder = async(response, orderData, userId) => {
     //try save new order, throw if validation fails
     try {
-        const newOrder = {customerId: String(userId), items: orderData.items}
+        const newOrder = { customerId: String(userId), items: orderData.items }
         const createdOrder = await Order.create(newOrder);
         return responseUtils.createdResource(response, createdOrder);
     } catch (error) {

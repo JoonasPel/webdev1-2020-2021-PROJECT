@@ -24,7 +24,8 @@ const allowedMethods = {
  * Send response to client options request.
  *
  * @param {string} filePath pathname of the request URL
- * @param {http.ServerResponse} response
+ * @param {http.ServerResponse} response http response
+ * @returns {void} Returns void
  */
 const sendOptions = (filePath, response) => {
     if (filePath in allowedMethods) {
@@ -44,8 +45,8 @@ const sendOptions = (filePath, response) => {
  * Does the url have an ID component as its last part? (e.g. /api/users/dsf7844e)
  *
  * @param {string} url filePath
- * @param {string} prefix
- * @returns {boolean}
+ * @param {string} prefix url to check
+ * @returns {boolean} true/ false
  */
 const matchIdRoute = (url, prefix) => {
     const idPattern = '[0-9a-z]{8,24}';
@@ -57,7 +58,7 @@ const matchIdRoute = (url, prefix) => {
  * Does the URL match /api/users/{id}
  *
  * @param {string} url filePath
- * @returns {boolean}
+ * @returns {boolean} true/ false
  */
 const matchUserId = url => {
     return matchIdRoute(url, 'users');
@@ -67,7 +68,7 @@ const matchUserId = url => {
  * Does the URL match /api/products/{id}
  *
  * @param {string} url filePath
- * @returns {boolean}
+ * @returns {boolean} true/ false
  */
 const matchProductId = url => {
     return matchIdRoute(url, 'products');
@@ -77,7 +78,7 @@ const matchProductId = url => {
  * Does the URL match /api/orders/{id}
  *
  * @param {string} url filePath
- * @returns {boolean}
+ * @returns {boolean} true/ false
  */
 const matchOrderId = url => {
     return matchIdRoute(url, 'orders');
@@ -312,9 +313,10 @@ const handleRequest = async(request, response) => {
 
 /**
  * 
- * @param {Object|null} user 
- * @param {http.ServerResponse} response 
- * @param {Boolean} adminOnly 
+ * @param {object} user User object
+ * @param {http.ServerResponse} response http response
+ * @param {boolean} adminOnly true/ false
+ * @returns {void} returns void
  */
 function authenticateUser(user, response, adminOnly = false) {
     //checks if user doesn't exist

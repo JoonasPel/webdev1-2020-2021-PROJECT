@@ -5,19 +5,19 @@ const responseUtils = require("../utils/responseUtils");
 /**
  * Send all users as JSON
  *
- * @param {http.ServerResponse} response
+ * @param {http.ServerResponse} response Http response
  */
 const getAllUsers = async response => {
-    let allUsers = await User.find();
+    const allUsers = await User.find();
     return responseUtils.sendJson(response, allUsers);
 };
 
 /**
  * Delete user and send deleted user as JSON
  *
- * @param {http.ServerResponse} response
- * @param {string} userId
- * @param {Object} currentUser (mongoose document object)
+ * @param {http.ServerResponse} response Http response
+ * @param {string} userId User to delete
+ * @param {object} currentUser (mongoose document object)
  */
 const deleteUser = async(response, userId, currentUser) => {
     //If user to delete not found
@@ -36,14 +36,14 @@ const deleteUser = async(response, userId, currentUser) => {
 /**
  * Update user and send updated user as JSON
  *
- * @param {http.ServerResponse} response
- * @param {string} userId
- * @param {Object} currentUser (mongoose document object)
- * @param {Object} userData JSON data from request body
+ * @param {http.ServerResponse} response Http response
+ * @param {string} userId User to update
+ * @param {object} currentUser (mongoose document object)
+ * @param {object} userData JSON data from request body
  */
 const updateUser = async(response, userId, currentUser, userData) => {
     //current user is not allowed update its own data
-    if (currentUser._id == userId) {
+    if (currentUser._id === userId) {
         return responseUtils.badRequest(response, 'Updating own data is not allowed');
     }
 
@@ -72,9 +72,10 @@ const updateUser = async(response, userId, currentUser, userData) => {
 /**
  * Send user data as JSON
  *
- * @param {http.ServerResponse} response
- * @param {string} userId
- * @param {Object} currentUser (mongoose document object)
+ * @param {http.ServerResponse} response Http response
+ * @param {string} userId User to view
+ * @param {object} currentUser (mongoose document object)
+ * @returns {void} 
  */
 const viewUser = async(response, userId, currentUser) => {
     const targetUser = await User.findOne({ _id: userId });
@@ -91,8 +92,8 @@ const viewUser = async(response, userId, currentUser) => {
 /**
  * Register new user and send created user back as JSON
  *
- * @param {http.ServerResponse} response
- * @param {Object} userData JSON data from request body
+ * @param {http.ServerResponse} response Http response
+ * @param {object} userData JSON data from request body
  */
 const registerUser = async(response, userData) => {
     // TODO: 10.1 Implement this
@@ -115,7 +116,7 @@ const registerUser = async(response, userData) => {
         //update role to customer
         await User.updateOne({ email: userData.email }, { role: 'customer' });
         //get new user and return it as response
-        let newUser = await User.findOne({ email: userData.email });
+        const newUser = await User.findOne({ email: userData.email });
         // console.log(newUser)
 
         return responseUtils.createdResource(response, newUser);

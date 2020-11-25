@@ -1,13 +1,17 @@
   const bcrypt = require('bcryptjs');
   const mongoose = require('mongoose');
   const Schema = mongoose.Schema;
-
+  /**
+   * 
+   * @param {*} plainpasswd Password to encrypt
+   * @returns {string} return password hash
+   */
   function encrypter(plainpasswd) {
       //validate given password
       if (plainpasswd.length < 10) {
           return;
       }
-      let hash = bcrypt.hashSync(plainpasswd, 10);
+      const hash = bcrypt.hashSync(plainpasswd, 10);
       return hash;
   }
 
@@ -45,7 +49,7 @@
   /**
    * Compare supplied password with user's own (hashed) password
    *
-   * @param {string} password
+   * @param {string} password Given password in log in
    * @returns {Promise<boolean>} promise that resolves to the comparison result
    */
   userSchema.methods.checkPassword = async function(password) {

@@ -3,19 +3,19 @@ const responseUtils = require('../utils/responseUtils');
 /**
  * Send all products as JSON
  *
- * @param {http.ServerResponse} response
+ * @param {http.ServerResponse} response Http response
  */
 const getAllProducts = async response => {
     // TODO: 10.1 Implement this
-    let allProducts = await Product.find();
+    const allProducts = await Product.find();
     return responseUtils.sendJson(response, allProducts);
 };
 
 /**
  * Send product data as JSON
  * 
- * @param {http.ServerResponse} response 
- * @param {string} productId 
+ * @param {http.ServerResponse} response Http response
+ * @param {string} productId Product id of requested product
  */
 const getProductById = async(response, productId) => {
     const product = await Product.findOne({ _id: productId });
@@ -37,7 +37,7 @@ const updateProductById = async(response, productId, productData) => {
         //update information of product or throw error
         await Product.updateOne({ _id: productId }, productData, { runValidators: true });
         //return updated product
-        let updatedProduct = await Product.findOne({ _id: productId });
+        const updatedProduct = await Product.findOne({ _id: productId });
         return responseUtils.sendJson(response, updatedProduct);
     } catch (error) {
         return responseUtils.badRequest(response, error);
@@ -63,7 +63,7 @@ const addNewProduct = async(response, productData) => {
         return responseUtils.badRequest(response, 'Bad Request');
     }
 
-    let newProduct = await Product.findOne({ description: productData.description });
+    const newProduct = await Product.findOne({ description: productData.description });
     // console.log(newUser)
 
     return responseUtils.createdResource(response, newProduct);
