@@ -234,7 +234,7 @@ const handleRequest = async(request, response) => {
         if (currentUser.role !== 'admin') {
             return getAllOrders(response, currentUser._id, false);
         }
-        return getAllOrders(response, '', true);
+        return getAllOrders(response, currentUser._id, true);
 
     }
     // GET All products 

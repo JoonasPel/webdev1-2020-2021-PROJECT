@@ -7,7 +7,7 @@ const responseUtils = require('../utils/responseUtils');
  * @param {userId} UserId of requesting user
  * @param {admin} false if not admin
  */
-const getAllOrders = async(response, userId = ' ', admin = false) => {
+const getAllOrders = async(response, userId, admin) => {
     if (admin) {
         const allOrders = await Order.find();
         return responseUtils.sendJson(response, allOrders);
@@ -23,7 +23,7 @@ const getAllOrders = async(response, userId = ' ', admin = false) => {
  * @param {http.ServerResponse} response Http response
  * @param {string} orderId Order id 
  */
-const getOrderById = async(response, orderId, userId = ' ', admin) => {
+const getOrderById = async(response, orderId, userId, admin) => {
     //checks if orderId doesn't exist.
     if (await Order.exists({ _id: orderId }) === false) {
         return responseUtils.notFound(response);
