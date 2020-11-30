@@ -141,3 +141,30 @@ const removeElement = (containerId, elementId) => {
     const container = document.getElementById(containerId);
     container.querySelectorAll(`#${elementId}`).forEach(element => element.remove());
 };
+
+/**
+ * 
+ * @returns values of session storage as object
+ */
+const getSessionStorage = () => {
+
+    return Object.values(sessionStorage);
+
+}
+
+/**
+ * Get items from sessionstorage and show count in tab
+ */
+const updateCartItemsCountInNavi = () => {
+    const values = getSessionStorage();
+    const navilist = document.querySelectorAll('li');
+    if (values.length === 0) {
+        navilist[4].innerHTML = '<a href="cart.html">Shopping Cart</a>';
+        return;
+    } else {
+        let i = 0;
+        values.forEach(value => i = i + Number(value));
+        navilist[4].innerHTML = '<a href="cart.html">Shopping Cart (' + i + ')</a>'
+    }
+};
+window.onload = updateCartItemsCountInNavi();

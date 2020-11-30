@@ -65,7 +65,7 @@ document.addEventListener('click', function(e) {
     const actionCart = buttonId.split('-');
     const command = actionCart[0];
     const itemId = actionCart[1];
-    
+
     //use array to decide function
     if (command === 'minus') {
         decreaseProductCount(itemId);
@@ -73,10 +73,14 @@ document.addEventListener('click', function(e) {
         increaseProductCount(itemId);
     } else if (command === 'place') {
         //clear shopping cart from UI and session storage
+        if (getSessionStorage().length === 0) {
+            createNotification('No items in cart. Order not sent!', 'notifications-container', false);
+            return;
+        }
         clearCart();
         createNotification('Succesfully created an order!', 'notifications-container');
     }
-
+    updateCartItemsCountInNavi();
 }, false);
 
 function decreaseProductCount(itemId) {

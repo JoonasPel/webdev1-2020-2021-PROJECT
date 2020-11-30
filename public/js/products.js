@@ -33,6 +33,10 @@ const listProductHTML = (product) => {
     //price
     clone.querySelectorAll("p")[1].textContent = product.price;
     clone.querySelectorAll("p")[1].id = `price-${product._id}`;
+
+    //picture
+    clone.querySelectorAll("img")[0].src = product.image;
+    clone.querySelectorAll("img")[0].alt = product.name;
     //buttons
     clone.querySelectorAll("button")[0].id = `add-to-cart-${product._id}`;
 
@@ -66,5 +70,6 @@ document.addEventListener('click', async function(e) {
 
         }
         createNotification('Added ' + product.name + ' to cart!', 'notifications-container');
+        updateCartItemsCountInNavi();
     }
 }, false);
