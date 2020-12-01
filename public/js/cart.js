@@ -77,13 +77,16 @@ document.addEventListener('click', function(e) {
             createNotification('No items in cart. Order not sent!', 'notifications-container', false);
             return;
         }
-        clearCart();
-        createNotification('Succesfully created an order!', 'notifications-container');
+        generateOrder();
     }
     updateCartItemsCountInNavi();
 }, false);
 
-function decreaseProductCount(itemId) {
+/**
+ *  Decrease product count in sessionStorage
+ * @param {*} itemId Item to decrease in sessionstorage
+ */
+const decreaseProductCount = (itemId) => {
     //amount of items 
     let count = Number(sessionStorage.getItem(itemId));
     //decrease amount
@@ -101,7 +104,11 @@ function decreaseProductCount(itemId) {
 
 }
 
-function increaseProductCount(itemId) {
+/**
+ * Increase product count in sessionStorage
+ * @param {*} itemId ItemId to increase in sessionStorage
+ */
+const increaseProductCount = (itemId) => {
     //amount of items 
     let count = Number(sessionStorage.getItem(itemId));
     //update session storage with increased amount
@@ -110,11 +117,51 @@ function increaseProductCount(itemId) {
     document.getElementById(`amount-${itemId}`).innerText = `${count}x`;
 }
 
-function clearCart() {
+/**
+ * Clear cart
+ */
+const clearCart = () => {
     //clears session storage
     sessionStorage.clear();
     //clears UI, all items have class 'item-row'
     document.querySelectorAll('.item-row').forEach(item => item.remove());
+}
+
+/**
+ * Generate order from session storage
+ */
+const generateOrder = async() => {
+    //get all products and amounts from sessionstorage
+    const orderProducts = Object(sessionStorage);
+    let postItems = JSON.parse('{ "items": [] }');
+    let i = 0;
+    for (product of Object.keys(orderProducts)) {
+        getJSON(`/api/products/${product}`).then(data => {
+            const amount = sessionStorage.getItem(data._id)
+            const item = {
+                "product": { "_id": data._id, "name": data.name, "price": Number(data.price), "description": data.description },
+                "quantity": Number(amount)
+            }
+            postItems['items'].push(item);
+            i++
+            //test if all products are inserted into postItems ready to save into DB
+            if (orderProducts.length == i) {
+                submitOrder(postItems);
+            }
+        })
+    }
+}
+
+/**
+ * Submit order to DB
+ * @param {*} orderData Orderdata as JSON
+ */
+const submitOrder = async(orderData) => {
+    //all needed functions
+    clearCart();
+    updateCartItemsCountInNavi();
+    createNotification('Succesfully created an order!', 'notifications-container');
+    postOrPutJSON('/api/orders', 'POST', orderData);
 }
 
 getAllProductsFromCart();

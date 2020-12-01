@@ -7,8 +7,13 @@ getJSON("/api/orders").then(data => {
     data.forEach(addOrder);
 });
 
+/**
+ * Add orders to DOM
+ * 
+ * @param {json} oneOrder 
+ */
 const addOrder = (oneOrder) => {
-    console.log(oneOrder);
+    //console.log(oneOrder);
 
     //add line to separate orders
     let line = document.createElement("hr");
@@ -23,7 +28,11 @@ const addOrder = (oneOrder) => {
     oneOrder.items.forEach(listOrderHTML);
 }
 
-
+/**
+ * Add product details to DOM
+ * 
+ * @param {json} productDetails 
+ */
 const listOrderHTML = (productDetails) => {
 
     const product = productDetails.product;
