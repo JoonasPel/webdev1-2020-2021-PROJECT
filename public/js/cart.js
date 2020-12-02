@@ -134,22 +134,38 @@ const generateOrder = async() => {
     //get all products and amounts from sessionstorage
     const orderProducts = Object(sessionStorage);
     let postItems = JSON.parse('{ "items": [] }');
+    //i to handle submitOrder logic
     let i = 0;
-    for (product of Object.keys(orderProducts)) {
-        getJSON(`/api/products/${product}`).then(data => {
-            const amount = sessionStorage.getItem(data._id)
-            const item = {
-                "product": { "_id": data._id, "name": data.name, "price": Number(data.price), "description": data.description },
-                "quantity": Number(amount)
-            }
-            postItems['items'].push(item);
-            i++
-            //test if all products are inserted into postItems ready to save into DB
-            if (orderProducts.length == i) {
-                submitOrder(postItems);
-            }
-        })
-    }
+    Object.entries(orderProducts).forEach(([key, val]) =>
+            getJSON(`/api/products/${key}`).then(data => {
+                const amount = val;
+                const item = {
+                    "product": { "_id": data._id, "name": data.name, "price": Number(data.price), "description": data.description },
+                    "quantity": Number(amount)
+                }
+                postItems['items'].push(item);
+                i++
+                //test if all products are inserted into postItems ready to save into DB
+                if (orderProducts.length == i) {
+                    submitOrder(postItems);
+                }
+            })
+        )
+        //    // for (product of Object.keys(orderProducts)) {
+        //         getJSON(`/api/products/${product}`).then(data => {
+        //             const amount = sessionStorage.getItem(data._id)
+        //             const item = {
+        //                 "product": { "_id": data._id, "name": data.name, "price": Number(data.price), "description": data.description },
+        //                 "quantity": Number(amount)
+        //             }
+        //             postItems['items'].push(item);
+        //             i++
+        //             //test if all products are inserted into postItems ready to save into DB
+        //             if (orderProducts.length == i) {
+        //                 submitOrder(postItems);
+        //             }
+        //         })
+        //     }
 }
 
 /**
