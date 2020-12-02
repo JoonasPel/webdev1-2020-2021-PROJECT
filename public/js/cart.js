@@ -159,10 +159,16 @@ const generateOrder = async() => {
  */
 const submitOrder = async(orderData) => {
     //all needed functions
-    clearCart();
-    updateCartItemsCountInNavi();
-    createNotification('Succesfully created an order!', 'notifications-container');
-    postOrPutJSON('/api/orders', 'POST', orderData);
+
+    const response = await postOrPutJSON('/api/orders', 'POST', orderData);
+    if (response.status === 201) {
+        clearCart();
+        updateCartItemsCountInNavi();
+        createNotification('Succesfully created an order!', 'notifications-container');
+    } else {
+        createNotification('Order not created!', 'notifications-container', false)
+    }
+
 }
 
 getAllProductsFromCart();
