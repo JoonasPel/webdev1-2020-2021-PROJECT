@@ -94,4 +94,4 @@ You are also free to add more security threats + protection here, if you will.
 
 WebShop should prevent all attacks against different types of attacks. Data in registration should be sanitised properly before saving into db to prevent possible attacks.
 
--Customerid should not be sent with orders if the request is not from an admin. Customers should not be allowed to have see their customerid used in the database.
+-Customerid should not be sent with orders if the request is not from an admin. Customers should not be allowed to see their customerid used in the database.
