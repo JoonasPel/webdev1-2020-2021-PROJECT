@@ -76,15 +76,15 @@ TODO: Links to at least 10 of your group's GitLab issues, and their associated M
 
 - [Show cart items count in UI](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/1)
 - [Allow user to change their email](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/2)
--[Allow user to change their name](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/3)
--[Allow user to change their password](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/4)
--[Implement DB connection to products](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/5)
--[Allow user to save their shopping cart](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/6)
--[Show the total price of products in a shopping cart](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/7)
--[Allow user to reset his/her password via email](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/8)
--[Fix ESLint errors](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/9)
--[Simplify routes.js](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/10)
--[Get email-notification when product is available](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues11)
+- [Allow user to change their name](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/3)
+- [Allow user to change their password](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/4)
+- [Implement DB connection to products](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/5)
+- [Allow user to save their shopping cart](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/6)
+- [Show the total price of products in a shopping cart](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/7)
+- [Allow user to reset his/her password via email](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/8)
+- [Fix ESLint errors](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/9)
+- [Simplify routes.js](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/10)
+- [Get email-notification when product is available](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues11)
 
 ## Security concerns
 
