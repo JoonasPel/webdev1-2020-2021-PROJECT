@@ -10,7 +10,7 @@ resposible for: Assisting developer
 
 # WebDev1 coursework assignment
 
-A web shop with vanilla HTML, CSS.
+A web shop with vanilla HTML, CSS. WebShop version now is in pre Alpha stage. So there are lot of doing.
 
 
 ### The project structure
@@ -39,7 +39,7 @@ A web shop with vanilla HTML, CSS.
 │   │    ├── products.js    --> product page functions
 │   │    ├── register.js    --> register user function
 │   │    └── utils.js       --> utility functions for all pages
-│   └── css                 --> stylsheet
+│   └── css                 --> stylesheet
 ├── utils                   
 │   ├── render.js           --> rendering functions
 │   ├── requestUtils.js     --> request handler functions
@@ -56,6 +56,8 @@ A web shop with vanilla HTML, CSS.
 ![UML Image of site structure](docs/webdev1uml.png "Webshop UML")
 
 ### Pages and navigation
+List Orders page is there to show user's own or all users orders depending of user role.
+
 Customer user needs to have "Profile" or similar page to view own orders and change his/her user information.
 
 Admin user needs to have "Admin functionalities" or similar page to:
@@ -72,9 +74,22 @@ There are differen MongoDB models for database, order, product and user.
 
 TODO: Links to at least 10 of your group's GitLab issues, and their associated Mocha tests and test files.
 
+- [Show cart items count in UI](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/1)
+- [Allow user to change their email](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/2)
+-[Allow user to change their name](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/3)
+-[Allow user to change their password](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/4)
+-[Implement DB connection to products](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/5)
+-[Allow user to save their shopping cart](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/6)
+-[Show the total price of products in a shopping cart](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/7)
+-[Allow user to reset his/her password via email](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/8)
+-[Fix ESLint errors](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/9)
+-[Simplify routes.js](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues/10)
+-[Get email-notification when product is available](https://course-gitlab.tuni.fi/webdev1-2020-2021/webdev1-group-46/-/issues11)
+
 ## Security concerns
 
 TODO: list the security threats represented in the course slides.
 Document how your application protects against the threats.
 You are also free to add more security threats + protection here, if you will.
 
+WebShop should prevent all attacks against different types of attacks. Data in registration should be sanitised properly before saving into db to prevent possible attacks.
