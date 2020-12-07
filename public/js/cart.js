@@ -167,6 +167,7 @@ const submitOrder = async(orderData) => {
         createNotification('Succesfully created an order!', 'notifications-container');
     } else {
         clearCart();
+        updateCartItemsCountInNavi();
         createNotification('Order not created!', 'notifications-container', false)
     }
 
