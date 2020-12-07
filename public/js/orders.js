@@ -10,7 +10,7 @@ getJSON("/api/orders").then(data => {
 /**
  * Add orders to DOM
  * 
- * @param {json} oneOrder 
+ * @param {JSON} oneOrder order object with products inside
  */
 const addOrder = (oneOrder) => {
     //console.log(oneOrder);
@@ -31,7 +31,7 @@ const addOrder = (oneOrder) => {
 /**
  * Add product details to DOM
  * 
- * @param {json} productDetails 
+ * @param {JSON} productDetails  item/product to insert to page
  */
 const listOrderHTML = (productDetails) => {
 
